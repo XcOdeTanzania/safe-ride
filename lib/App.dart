@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:safe_ride/styles/theme.dart';
 import 'package:safe_ride/views/pages/home_page.dart';
+import 'package:safe_ride/views/pages/insights_page.dart';
 import 'package:safe_ride/views/pages/login_page.dart';
 import 'package:safe_ride/views/pages/profile_page.dart';
 import 'package:safe_ride/views/screens/AnimatedSplashScreen.dart';
@@ -31,6 +32,7 @@ class _AppState extends State<App> {
         homeScreen: (BuildContext context) =>
             _isAuthenticated ? HomePage() : LoginPage(),
         profileScreen: (BuildContext context) => ProfilePage(),
+        insightsScreen: (BuildContext context) => InsightsPage(),
       },
     );
   }
