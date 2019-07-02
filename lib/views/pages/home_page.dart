@@ -295,7 +295,7 @@ class _HomePageState extends State<HomePage> {
                   fontSize: 16.0,
                   color: Colors.black),
               decoration: InputDecoration(
-                  focusColor: Colors.white,
+                  //focusColor: Colors.white,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(30),
