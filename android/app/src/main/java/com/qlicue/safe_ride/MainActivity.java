@@ -1,4 +1,4 @@
-package com.example.safe_ride;
+package com.qlicue.safe_ride;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;
