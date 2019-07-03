@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
   int counter = 0;
   int intialSpeed = 0;
   Color speedColor = Colors.blue;
-  Color speedColorBackground = Colors.white;
+  Color speedColorBackground = Colors.black38;
   PublishSubject<double> eventObservable = new PublishSubject();
 
   Completer<GoogleMapController> _controller = Completer();
@@ -276,7 +276,7 @@ class _HomePageState extends State<HomePage> {
 
         controller.animateCamera(CameraUpdate.newCameraPosition(kGooglePlex));
 
-        eventObservable.add(handleData.speed);
+        eventObservable.add(handleData.speed * 10);
       });
     });
   }

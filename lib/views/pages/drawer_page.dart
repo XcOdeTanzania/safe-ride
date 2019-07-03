@@ -203,7 +203,7 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                                     onTap: () {
                                       Navigator.pop(context);
                                       model.signOut().then((val) {
-                                        Navigator.of(context).pop();
+                                       
                                       });
                                     },
                                   ),

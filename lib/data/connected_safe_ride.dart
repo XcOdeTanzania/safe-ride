@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -24,7 +26,11 @@ mixin UtilityModel on ConnectedSafeRideModel {
 
   void addNewLog({@required Logs log}) {
     _availableLogs.add(log);
-    notifyListeners();
+
+    Timer(Duration(seconds: 3), () {
+      print("Yeah, this line is printed after 3 seconds");
+      notifyListeners();
+    });
   }
 }
 mixin LoginModel on ConnectedSafeRideModel {
