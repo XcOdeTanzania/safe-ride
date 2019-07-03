@@ -8,6 +8,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:speedometer/speedometer.dart';
 import 'drawer_page.dart';
 import 'package:screenshot/screenshot.dart';
+import 'package:safe_ride/styles/style.dart' as ThemeColor;
 
 class HomePage extends StatefulWidget {
   @override
@@ -17,6 +18,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
+  StreamSubscription<Position> positionStream;
   double _lowerValue = 80.0;
   double _upperValue = 180.0;
   int start = 0;
@@ -51,11 +53,13 @@ class _HomePageState extends State<HomePage> {
         .then((onValue) {
       myIcon = onValue;
     });
-    const oneSec = const Duration(seconds: 1);
-    // var rng = new Random();
-    // new Timer.periodic(oneSec,
-    //     (Timer t) => eventObservable.add(rng.nextInt(59) + rng.nextDouble()));
+
     _getLocation();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -182,7 +186,7 @@ class _HomePageState extends State<HomePage> {
                       child: Icon(
                         Icons.camera_enhance,
                         size: 40,
-                        color: Color(0xFF0084ff),
+                        color: ThemeColor.Colors.saferidePrimaryColor,
                       ),
                     ),
                   ),
@@ -221,17 +225,18 @@ class _HomePageState extends State<HomePage> {
 
     var geolocator = Geolocator();
     var locationOptions =
-        LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 10);
-    StreamSubscription<Position> positionStream = geolocator
+        LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 0);
+    positionStream = geolocator
         .getPositionStream(locationOptions)
         .listen((Position position) {});
     positionStream.onData((handleData) {
       print('aaaaa');
-      print(handleData.speedAccuracy);
+      print(handleData.heading);
       setState(() {
         marker = Marker(
           markerId: markerId,
           icon: myIcon,
+          rotation: 180,
           position: LatLng(handleData.latitude, handleData.longitude),
           infoWindow: InfoWindow(title: 'Car', snippet: '*'),
           onTap: () {

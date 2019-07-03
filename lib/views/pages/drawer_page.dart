@@ -151,12 +151,10 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                                 ),
                                 onTap: () {
                                   Navigator.pop(context);
-                                  Navigator.pushNamed(context, profileScreen);
+                                  Navigator.pushNamed(context, insightsScreen);
                                 },
                               ),
-                              
                               Divider(),
-
                               ListTile(
                                   title: Text(
                                 'Others',
@@ -179,7 +177,7 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                                   ),
                                 ),
                                 onTap: () {
-                                    Navigator.pop(context);
+                                  Navigator.pop(context);
                                   // model.logout().then((val) {
                                   //   Navigator.of(context).pop();
                                   // });
