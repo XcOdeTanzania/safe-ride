@@ -99,7 +99,7 @@ class _LoginPageState extends State<LoginPage> {
                           fontSize: 16.0,
                           color: Colors.black),
                       decoration: InputDecoration(
-                          focusColor: Colors.white,
+                          //focusColor: Colors.white,
                           fillColor: Colors.white,
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(30),
@@ -136,7 +136,7 @@ class _LoginPageState extends State<LoginPage> {
                           fontSize: 16.0,
                           color: Colors.black),
                       decoration: InputDecoration(
-                          focusColor: Colors.white,
+                         // focusColor: Colors.white,
                           fillColor: Colors.white,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(30),
