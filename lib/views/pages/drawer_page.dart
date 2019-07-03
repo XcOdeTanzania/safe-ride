@@ -162,6 +162,22 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                                           context, insightsScreen);
                                     },
                                   ),
+                                  ListTile(
+                                    leading: const Icon(
+                                      Icons.data_usage,
+                                    ),
+                                    title: Text(
+                                      'Logs',
+                                      style: const TextStyle(
+                                        fontSize: 15.0,
+                                        fontFamily: 'mermaid',
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      Navigator.pushNamed(context, logsScreen);
+                                    },
+                                  ),
                                   Divider(),
                                   ListTile(
                                       title: Text(

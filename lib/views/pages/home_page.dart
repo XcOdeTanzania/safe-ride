@@ -1,16 +1,22 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:safe_ride/data/main.dart';
+import 'package:safe_ride/models/logs.dart';
 import 'package:speedometer/speedometer.dart';
 import 'drawer_page.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:safe_ride/styles/style.dart' as ThemeColor;
 
 class HomePage extends StatefulWidget {
+  final MainModel model;
+
+  const HomePage({Key key, @required this.model}) : super(key: key);
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -75,7 +81,21 @@ class _HomePageState extends State<HomePage> {
       key: _scaffoldKey,
       appBar: AppBar(
         title: Text('Safe Ride'),
-        actions: <Widget>[Icon(Icons.ac_unit)],
+        actions: <Widget>[
+          BadgeIconButton(
+              itemCount: 4,
+              icon: Icon(Icons.notification_important),
+              badgeColor: Colors.green,
+              badgeTextColor: Colors.white,
+              hideZeroCount: true,
+              onPressed: () {
+                showInSnackBar('Notification sms from next of kin');
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (context) => ShoppingCartPage()));
+              })
+        ],
       ),
       body: Screenshot(
         controller: screenshotController,
@@ -135,27 +155,24 @@ class _HomePageState extends State<HomePage> {
                         color: speedColorBackground,
                       ),
                       child: Center(
-                          child: RichText(
-                        text: TextSpan(
-                          text: '',
-                          children: <TextSpan>[
-                            TextSpan(
-                                text: intialSpeed.toString() + '\n',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 40,
-                                    color: speedColor)),
-                            TextSpan(
-                                text: 'KMPH',
-                                style: TextStyle(color: speedColor)),
-                          ],
-                        ),
+                          child: Column(
+                        children: <Widget>[
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(intialSpeed.toString(),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 40,
+                                  color: speedColor)),
+                          Text("KMP", style: TextStyle(color: speedColor))
+                        ],
                       )),
                     ),
                   ),
                 ),
-                height: 200.0,
-                width: 200.0,
+                height: MediaQuery.of(context).size.width / 2,
+                width: MediaQuery.of(context).size.width / 2,
               ),
             ),
             Align(
@@ -191,8 +208,8 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
-                height: 200.0,
-                width: 200.0,
+                height: MediaQuery.of(context).size.width / 2,
+                width: MediaQuery.of(context).size.width / 2,
               ),
             )
           ],
@@ -230,8 +247,15 @@ class _HomePageState extends State<HomePage> {
         .getPositionStream(locationOptions)
         .listen((Position position) {});
     positionStream.onData((handleData) {
-      print('aaaaa');
-      print(handleData.heading);
+      Logs _log = Logs(
+          altitude: handleData.altitude,
+          latitude: handleData.latitude,
+          longitude: handleData.longitude,
+          speed: handleData.speed);
+
+      widget.model.addNewLog(log: _log);
+
+      print(handleData.timestamp);
       setState(() {
         marker = Marker(
           markerId: markerId,
@@ -269,7 +293,7 @@ class _HomePageState extends State<HomePage> {
             fontSize: 16.0,
             fontFamily: "WorkSansSemiBold"),
       ),
-      backgroundColor: Colors.blue,
+      backgroundColor: ThemeColor.Colors.saferidePrimaryColor,
       duration: Duration(seconds: 3),
     ));
   }

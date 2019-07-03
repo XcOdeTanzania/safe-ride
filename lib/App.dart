@@ -3,6 +3,7 @@ import 'package:safe_ride/styles/theme.dart';
 import 'package:safe_ride/views/pages/home_page.dart';
 import 'package:safe_ride/views/pages/insights_page.dart';
 import 'package:safe_ride/views/pages/login_page.dart';
+import 'package:safe_ride/views/pages/logs_page.dart';
 import 'package:safe_ride/views/pages/profile_page.dart';
 import 'package:safe_ride/views/screens/AnimatedSplashScreen.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -39,9 +40,10 @@ class _AppState extends State<App> {
         home: AnimatedSplashScreen(),
         routes: {
           homeScreen: (BuildContext context) =>
-              _isAuthenticated ? HomePage() : LoginPage(),
+              _isAuthenticated ? HomePage(model: _model,) : LoginPage(),
           profileScreen: (BuildContext context) => ProfilePage(),
           insightsScreen: (BuildContext context) => InsightsPage(),
+          logsScreen: (BuildContext context) => LogsPage(),
         },
       ),
       model: _model,

@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:safe_ride/models/logs.dart';
 import 'package:safe_ride/models/user.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -10,8 +12,21 @@ mixin ConnectedSafeRideModel on Model {
 
   //fire base autheFnticated user..
   FirebaseUser _user;
+  List<Logs> _availableLogs = [];
 }
-mixin UtilityModel on ConnectedSafeRideModel {}
+mixin UtilityModel on ConnectedSafeRideModel {
+  List<Logs> getLogs() {
+    if (_availableLogs == null) {
+      return <Logs>[];
+    }
+    return List<Logs>.from(_availableLogs);
+  }
+
+  void addNewLog({@required Logs log}) {
+    _availableLogs.add(log);
+    notifyListeners();
+  }
+}
 mixin LoginModel on ConnectedSafeRideModel {
   PublishSubject<bool> _userSubject = PublishSubject();
 
