@@ -8,6 +8,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:speedometer/speedometer.dart';
 import 'drawer_page.dart';
 import 'package:screenshot/screenshot.dart';
+import 'package:safe_ride/styles/style.dart' as ThemeColor;
 
 class HomePage extends StatefulWidget {
   @override
@@ -185,7 +186,7 @@ class _HomePageState extends State<HomePage> {
                       child: Icon(
                         Icons.camera_enhance,
                         size: 40,
-                        color: Color(0xFF0084ff),
+                        color: ThemeColor.Colors.saferidePrimaryColor,
                       ),
                     ),
                   ),

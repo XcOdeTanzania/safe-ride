@@ -6,9 +6,9 @@ class Colors {
   const Colors();
 
   static const Color loginGradientStart = const Color(0xFFbab66);
-  static const Color loginGradientEnd = const Color(0xFF00d0cb);
+  static const Color loginGradientEnd = const Color(0xFFf43f5f);
   static const Color loginButtonMix = const Color(0xFFeb66f30);
-  static const Color saferidePrimaryColor = const Color(0xFF00d0cb);
+  static const Color saferidePrimaryColor = const Color(0xFFf43f5f);
   static const Color saferideSecondaryColor = const Color(0xFFffc0cb);
   static const Color saferideTertiaryColor = const Color(0xFFffc0cb);
 
