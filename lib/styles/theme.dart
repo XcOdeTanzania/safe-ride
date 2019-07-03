@@ -6,7 +6,7 @@ class ArchSampleTheme {
     final originalBody1 = originalTextTheme.body1;
 
     return ThemeData.light().copyWith(
-        primaryColor: Color(0xFF0084ff),
+        primaryColor: Colors.cyan[300],
         accentColor: Colors.white,
         buttonColor: Color(0xFFff453a),
         textSelectionColor: Colors.cyan[100],

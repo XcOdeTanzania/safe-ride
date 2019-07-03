@@ -14,7 +14,7 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  bool _isAuthenticated = true;
+  bool _isAuthenticated = false;
 
   @override
   void initState() {
