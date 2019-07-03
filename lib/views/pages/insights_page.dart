@@ -11,9 +11,10 @@ class InsightsPage extends StatefulWidget {
 }
 
 class _InsightsPageState extends State<InsightsPage> {
-  final double _containerHeight = 600.0;
+  
   @override
   Widget build(BuildContext context) {
+    final double _containerHeight = MediaQuery.of(context).size.height/2;
     Widget _gyroscope = LineGraph(
       graphTitle: "Gyroscope Variations",
       graphSubtitle: "Divice tilt per day",

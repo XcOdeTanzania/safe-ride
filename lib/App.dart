@@ -5,8 +5,10 @@ import 'package:safe_ride/views/pages/insights_page.dart';
 import 'package:safe_ride/views/pages/login_page.dart';
 import 'package:safe_ride/views/pages/profile_page.dart';
 import 'package:safe_ride/views/screens/AnimatedSplashScreen.dart';
+import 'package:scoped_model/scoped_model.dart';
 
 import 'constants/constants.dart';
+import 'data/main.dart';
 
 class App extends StatefulWidget {
   @override
@@ -15,25 +17,34 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
   bool _isAuthenticated = false;
+  final MainModel _model = MainModel();
 
   @override
   void initState() {
+      _model.userSubject.listen((bool isAuthenticated) {
+      setState(() {
+        _isAuthenticated = isAuthenticated;
+      });
+    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Neatlux',
-      debugShowCheckedModeBanner: false,
-      theme: ArchSampleTheme.theme,
-      home: AnimatedSplashScreen(),
-      routes: {
-        homeScreen: (BuildContext context) =>
-            _isAuthenticated ? HomePage() : LoginPage(),
-        profileScreen: (BuildContext context) => ProfilePage(),
-        insightsScreen: (BuildContext context) => InsightsPage(),
-      },
+    return ScopedModel<MainModel>(
+      child: MaterialApp(
+        title: 'SAFE RIDE',
+        debugShowCheckedModeBanner: false,
+        theme: ArchSampleTheme.theme,
+        home: AnimatedSplashScreen(),
+        routes: {
+          homeScreen: (BuildContext context) =>
+              _isAuthenticated ? HomePage() : LoginPage(),
+          profileScreen: (BuildContext context) => ProfilePage(),
+          insightsScreen: (BuildContext context) => InsightsPage(),
+        },
+      ),
+      model: _model,
     );
   }
 }
