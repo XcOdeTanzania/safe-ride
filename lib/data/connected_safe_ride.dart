@@ -26,11 +26,7 @@ mixin UtilityModel on ConnectedSafeRideModel {
 
   void addNewLog({@required Logs log}) {
     _availableLogs.add(log);
-
-    Timer(Duration(seconds: 3), () {
-      print("Yeah, this line is printed after 3 seconds");
-      notifyListeners();
-    });
+    notifyListeners();
   }
 }
 mixin LoginModel on ConnectedSafeRideModel {
@@ -43,7 +39,7 @@ mixin LoginModel on ConnectedSafeRideModel {
 
   Future<bool> signInWithGoogle() async {
     bool status;
-    print('locceee');
+
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
 
     final GoogleSignInAuthentication googleAuth =
@@ -53,7 +49,6 @@ mixin LoginModel on ConnectedSafeRideModel {
       idToken: googleAuth.idToken,
     );
 
-    print(credential);
     _user = await _auth.signInWithCredential(credential);
 
     assert(_user.email != null);
@@ -76,7 +71,7 @@ mixin LoginModel on ConnectedSafeRideModel {
     } else {
       status = false;
     }
-
+    _userSubject.add(true);
     notifyListeners();
     return status;
   }

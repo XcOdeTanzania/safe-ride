@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 
-import 'package:geolocator/geolocator.dart';
+//import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:safe_ride/data/main.dart';
@@ -12,6 +12,7 @@ import 'package:speedometer/speedometer.dart';
 import 'drawer_page.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:safe_ride/styles/style.dart' as ThemeColor;
+import 'package:location/location.dart';
 
 class HomePage extends StatefulWidget {
   final MainModel model;
@@ -24,7 +25,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
-  StreamSubscription<Position> positionStream;
+  // StreamSubscription<Position> positionStream;
   double _lowerValue = 80.0;
   double _upperValue = 180.0;
   int start = 0;
@@ -32,7 +33,7 @@ class _HomePageState extends State<HomePage> {
 
   int counter = 0;
   int intialSpeed = 0;
-  Color speedColor = Colors.blue;
+  Color speedColor = ThemeColor.Colors.saferidePrimaryColor;
   Color speedColorBackground = Colors.black38;
   PublishSubject<double> eventObservable = new PublishSubject();
 
@@ -53,7 +54,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-
+    test();
     BitmapDescriptor.fromAssetImage(
             ImageConfiguration(size: Size(48, 48)), 'assets/icons/car.png')
         .then((onValue) {
@@ -63,8 +64,18 @@ class _HomePageState extends State<HomePage> {
     _getLocation();
   }
 
+  void test() async {
+    LocationData currentLocation;
+    var location = new Location();
+
+    currentLocation = await location.getLocation();
+
+    print(currentLocation.heading);
+  }
+
   @override
   void dispose() {
+    // positionStream.cancel();
     super.dispose();
   }
 
@@ -189,7 +200,6 @@ class _HomePageState extends State<HomePage> {
                         });
 
                         showInSnackBar("Screenshot captured successfully");
-                        print(_imageFile.toString());
                       }).catchError((onError) {
                         print(onError);
                       });
@@ -235,33 +245,31 @@ class _HomePageState extends State<HomePage> {
 
     kGooglePlex = CameraPosition(
       target: LatLng(37.33754513, -122.04146632),
-      zoom: 14.4746,
+      bearing: 192.8334901395799,
+      zoom: 19.4746,
     );
 
     final GoogleMapController controller = await _controller.future;
 
-    var geolocator = Geolocator();
-    var locationOptions =
-        LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 0);
-    positionStream = geolocator
-        .getPositionStream(locationOptions)
-        .listen((Position position) {});
-    positionStream.onData((handleData) {
+    var location = new Location();
+
+    location.onLocationChanged().listen((LocationData currentLocation) {
+      print(currentLocation.latitude);
+      print(currentLocation.longitude);
       Logs _log = Logs(
-          altitude: handleData.altitude,
-          latitude: handleData.latitude,
-          longitude: handleData.longitude,
-          speed: handleData.speed);
+          altitude: currentLocation.altitude,
+          latitude: currentLocation.latitude,
+          longitude: currentLocation.longitude,
+          speed: currentLocation.speed);
 
       widget.model.addNewLog(log: _log);
 
-      print(handleData.timestamp);
       setState(() {
         marker = Marker(
           markerId: markerId,
           icon: myIcon,
-          rotation: 180,
-          position: LatLng(handleData.latitude, handleData.longitude),
+          rotation: currentLocation.heading,
+          position: LatLng(currentLocation.latitude, currentLocation.longitude),
           infoWindow: InfoWindow(title: 'Car', snippet: '*'),
           onTap: () {
             //_onMarkerTapped(markerId);
@@ -269,14 +277,30 @@ class _HomePageState extends State<HomePage> {
         );
 
         kGooglePlex = CameraPosition(
-            target: LatLng(handleData.latitude, handleData.longitude),
+            target: LatLng(currentLocation.latitude, currentLocation.longitude),
             bearing: 192.8334901395799,
             tilt: 59.440717697143555,
-            zoom: 19.151926040649414);
+            zoom: 19.4746);
 
         controller.animateCamera(CameraUpdate.newCameraPosition(kGooglePlex));
 
-        eventObservable.add(handleData.speed * 10);
+        eventObservable.add(currentLocation.speed * 3.6);
+
+        //speed color...
+        if (intialSpeed > 0) {
+          if (currentLocation.speed * 3.6 > intialSpeed) {
+            // intialSpeed = int.parse(_speedTextEditingController.text);
+            speedColor = Colors.white;
+            speedColorBackground = Colors.red;
+          } else if (currentLocation.speed * 3.6 - 10 > intialSpeed) {
+            // intialSpeed = int.parse(_speedTextEditingController.text);
+            speedColor = Colors.white;
+            speedColorBackground = Colors.white;
+          } else {
+            speedColor = Colors.white;
+            speedColorBackground = Colors.green;
+          }
+        }
       });
     });
   }
