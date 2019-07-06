@@ -252,7 +252,7 @@ class _HomePageState extends State<HomePage> {
 
         controller.animateCamera(CameraUpdate.newCameraPosition(kGooglePlex));
 
-        eventObservable.add(handleData.speed);
+        eventObservable.add(handleData.speed * 3.6);
       });
     });
   }

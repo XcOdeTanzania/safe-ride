@@ -1,1 +1,5 @@
+androidx/collection/ArrayMap.class
 com/google/firebase/provider/FirebaseInitProvider.class
+com/google/android/gms/common/internal/Preconditions.class
+com/google/firebase/FirebaseApp.class
+com/google/firebase/FirebaseApp$UiExecutor.class

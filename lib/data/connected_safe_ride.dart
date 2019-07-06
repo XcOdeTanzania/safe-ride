@@ -4,6 +4,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:safe_ride/models/user.dart';
 import 'package:scoped_model/scoped_model.dart';
 
+
 mixin ConnectedSafeRideModel on Model {
   //fire base current user..
   FirebaseUser _currentUser;
@@ -15,7 +16,10 @@ mixin UtilityModel on ConnectedSafeRideModel {}
 mixin LoginModel on ConnectedSafeRideModel {
   PublishSubject<bool> _userSubject = PublishSubject();
 
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: [
+    'email',
+    'https://www.googleapis.com/auth/admin.directory.customer.readonly',
+  ],);
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   static User _authenticatedUser;
@@ -23,7 +27,11 @@ mixin LoginModel on ConnectedSafeRideModel {
   Future<bool> signInWithGoogle() async {
     bool status;
     print('locceee');
+
+
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+
+
 
     final GoogleSignInAuthentication googleAuth =
         await googleUser.authentication;
@@ -32,7 +40,8 @@ mixin LoginModel on ConnectedSafeRideModel {
       idToken: googleAuth.idToken,
     );
 
-    print(credential);
+
+
     _user = await _auth.signInWithCredential(credential);
 
     assert(_user.email != null);

@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "833243655916-c6qida08hti593de9g4t2nhkh6m7rab7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.safeRide",
+            "certificate_hash": "00dc14631bcaedad3243a56c7f3fee2edb5ec0b0"
+          }
+        },
+        {
           "client_id": "833243655916-8vavi7hrab96f1fakrc3rg09bf92viei.apps.googleusercontent.com",
           "client_type": 3
         }

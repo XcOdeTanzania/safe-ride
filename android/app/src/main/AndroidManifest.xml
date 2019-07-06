@@ -7,7 +7,8 @@
          additional functionality it is fine to subclass or reimplement
          FlutterApplication and put your custom class here.
 
-          android:name="io.flutter.app.FlutterApplication" -->
+         android:name="androidx.multidex.MultiDexApplication"
+           -->
 
     <application
         android:name="io.flutter.app.FlutterApplication"

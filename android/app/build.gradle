@@ -44,6 +44,10 @@ android {
 
     buildTypes {
 
+        debug{
+            multiDexKeepFile file('multidex-config.txt')
+        }
+
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
@@ -60,7 +64,12 @@ flutter {
 
 dependencies {
     testImplementation 'junit:junit:4.12'
+    implementation 'com.google.firebase:firebase-core:17.0.0'
+    implementation 'androidx.multidex:multidex:2.0.1'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    //implementation 'androidx.multidex:multidex:2.0.1'
+
+
 }
+
+apply plugin: 'com.google.gms.google-services'
