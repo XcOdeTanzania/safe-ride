@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:safe_ride/styles/theme.dart';
+import 'package:safe_ride/views/pages/accelerometer_logs_page.dart';
+import 'package:safe_ride/views/pages/gps_logs_page.dart';
+import 'package:safe_ride/views/pages/gyroscope_logs_page.dart';
 import 'package:safe_ride/views/pages/home_page.dart';
 import 'package:safe_ride/views/pages/insights_page.dart';
 import 'package:safe_ride/views/pages/login_page.dart';
@@ -22,7 +25,7 @@ class _AppState extends State<App> {
 
   @override
   void initState() {
-      _model.userSubject.listen((bool isAuthenticated) {
+    _model.userSubject.listen((bool isAuthenticated) {
       setState(() {
         _isAuthenticated = isAuthenticated;
       });
@@ -39,11 +42,18 @@ class _AppState extends State<App> {
         theme: ArchSampleTheme.theme,
         home: AnimatedSplashScreen(),
         routes: {
-          homeScreen: (BuildContext context) =>
-              _isAuthenticated ? HomePage(model: _model,) : LoginPage(),
+          homeScreen: (BuildContext context) => _isAuthenticated
+              ? HomePage(
+                  model: _model,
+                )
+              : LoginPage(),
           profileScreen: (BuildContext context) => ProfilePage(),
           insightsScreen: (BuildContext context) => InsightsPage(),
           logsScreen: (BuildContext context) => LogsPage(),
+          gpsScreen: (BuildContext context) => GPSLogsPage(),
+          accelerometerScreen: (BuildContext context) =>
+              AccelerometerLogsPage(),
+          gyroscopeScreen: (BuildContext context) => GyroscopeLogsPage(),
         },
       ),
       model: _model,

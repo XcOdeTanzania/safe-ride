@@ -4,7 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:safe_ride/models/logs.dart';
+import 'package:safe_ride/models/accelerometer.dart';
+import 'package:safe_ride/models/gps_logs.dart';
+import 'package:safe_ride/models/gyroscope_logs.dart';
 import 'package:safe_ride/models/user.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -14,18 +16,44 @@ mixin ConnectedSafeRideModel on Model {
 
   //fire base autheFnticated user..
   FirebaseUser _user;
-  List<Logs> _availableLogs = [];
+  List<GPSLogs> _availableGPSLogs = [];
+  List<AccelerometerLogs> _availableAccelerometerLogs = [];
+  List<GyroscopeLogs> _availableGyroscopeLogs = [];
 }
 mixin UtilityModel on ConnectedSafeRideModel {
-  List<Logs> getLogs() {
-    if (_availableLogs == null) {
-      return <Logs>[];
+  List<GPSLogs> getGPSLogs() {
+    if (_availableGPSLogs == null) {
+      return <GPSLogs>[];
     }
-    return List<Logs>.from(_availableLogs);
+    return List<GPSLogs>.from(_availableGPSLogs);
   }
 
-  void addNewLog({@required Logs log}) {
-    _availableLogs.add(log);
+  List<AccelerometerLogs> getAccelerometerLogs() {
+    if (_availableAccelerometerLogs == null) {
+      return <AccelerometerLogs>[];
+    }
+    return List<AccelerometerLogs>.from(_availableAccelerometerLogs);
+  }
+
+  List<GyroscopeLogs> getGyroscopeLogs() {
+    if (_availableGyroscopeLogs == null) {
+      return <GyroscopeLogs>[];
+    }
+    return List<GyroscopeLogs>.from(_availableGyroscopeLogs);
+  }
+
+  void addNewGPSLog({@required GPSLogs log}) {
+    _availableGPSLogs.add(log);
+    notifyListeners();
+  }
+
+  void addNewAccelerometerLog({@required AccelerometerLogs log}) {
+    _availableAccelerometerLogs.add(log);
+    notifyListeners();
+  }
+
+  void addNewGyroscopeLog({@required GyroscopeLogs log}) {
+    _availableGyroscopeLogs.add(log);
     notifyListeners();
   }
 }
@@ -58,7 +86,7 @@ mixin LoginModel on ConnectedSafeRideModel {
 
     _currentUser = await _auth.currentUser();
     assert(_user.uid == _currentUser.uid);
-    print(_user);
+
     if (_user != null) {
       _authenticatedUser = User(
           email: _currentUser.email,

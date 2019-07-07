@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
 
-class Logs {
+class GPSLogs {
   final double latitude;
   final double longitude;
   final double altitude;
   final double speed;
-  Logs({
+  GPSLogs({
     @required this.latitude,
     @required this.longitude,
     @required this.altitude,

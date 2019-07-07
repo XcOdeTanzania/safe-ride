@@ -2,12 +2,14 @@ import 'dart:async';
 import 'dart:io';
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
-
-//import 'package:geolocator/geolocator.dart';
+import 'package:safe_ride/models/accelerometer.dart';
+import 'package:safe_ride/models/gps_logs.dart';
+import 'package:safe_ride/models/gyroscope_logs.dart';
+import 'package:sensors/sensors.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:safe_ride/data/main.dart';
-import 'package:safe_ride/models/logs.dart';
+
 import 'package:speedometer/speedometer.dart';
 import 'drawer_page.dart';
 import 'package:screenshot/screenshot.dart';
@@ -54,7 +56,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    test();
+
     BitmapDescriptor.fromAssetImage(
             ImageConfiguration(size: Size(48, 48)), 'assets/icons/car.png')
         .then((onValue) {
@@ -62,15 +64,6 @@ class _HomePageState extends State<HomePage> {
     });
 
     _getLocation();
-  }
-
-  void test() async {
-    LocationData currentLocation;
-    var location = new Location();
-
-    currentLocation = await location.getLocation();
-
-    print(currentLocation.heading);
   }
 
   @override
@@ -200,9 +193,7 @@ class _HomePageState extends State<HomePage> {
                         });
 
                         showInSnackBar("Screenshot captured successfully");
-                      }).catchError((onError) {
-                        print(onError);
-                      });
+                      }).catchError((onError) {});
                     },
                     child: Container(
                       padding: const EdgeInsets.all(15.0),
@@ -233,6 +224,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _getLocation() async {
+    print('***********object***********');
     marker = Marker(
       markerId: markerId,
       icon: myIcon,
@@ -254,15 +246,14 @@ class _HomePageState extends State<HomePage> {
     var location = new Location();
 
     location.onLocationChanged().listen((LocationData currentLocation) {
-      print(currentLocation.latitude);
-      print(currentLocation.longitude);
-      Logs _log = Logs(
+      print('object');
+      GPSLogs _log = GPSLogs(
           altitude: currentLocation.altitude,
           latitude: currentLocation.latitude,
           longitude: currentLocation.longitude,
           speed: currentLocation.speed);
 
-      widget.model.addNewLog(log: _log);
+      widget.model.addNewGPSLog(log: _log);
 
       setState(() {
         marker = Marker(
@@ -302,6 +293,22 @@ class _HomePageState extends State<HomePage> {
           }
         }
       });
+    });
+
+    //accelerometer
+
+    accelerometerEvents.listen((AccelerometerEvent event) {
+      AccelerometerLogs _log =
+          AccelerometerLogs(x: event.x, y: event.y, z: event.z);
+
+      widget.model.addNewAccelerometerLog(log: _log);
+    });
+
+//gyroscope
+    gyroscopeEvents.listen((GyroscopeEvent event) {
+      GyroscopeLogs _log = GyroscopeLogs(x: event.x, y: event.y, z: event.z);
+
+      widget.model.addNewGyroscopeLog(log: _log);
     });
   }
 
