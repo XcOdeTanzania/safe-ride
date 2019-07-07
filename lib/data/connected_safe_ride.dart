@@ -19,6 +19,8 @@ mixin ConnectedSafeRideModel on Model {
   List<GPSLogs> _availableGPSLogs = [];
   List<AccelerometerLogs> _availableAccelerometerLogs = [];
   List<GyroscopeLogs> _availableGyroscopeLogs = [];
+
+  bool _showScreenShot = false;
 }
 mixin UtilityModel on ConnectedSafeRideModel {
   List<GPSLogs> getGPSLogs() {
@@ -54,6 +56,15 @@ mixin UtilityModel on ConnectedSafeRideModel {
 
   void addNewGyroscopeLog({@required GyroscopeLogs log}) {
     _availableGyroscopeLogs.add(log);
+    notifyListeners();
+  }
+
+//screenshots...
+  get showScreenShot => _showScreenShot;
+
+  void setScreenShot({@required bool status}) {
+    _showScreenShot = status;
+    print('object');
     notifyListeners();
   }
 }

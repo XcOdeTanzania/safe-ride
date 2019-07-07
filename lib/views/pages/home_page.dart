@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:safe_ride/models/accelerometer.dart';
 import 'package:safe_ride/models/gps_logs.dart';
 import 'package:safe_ride/models/gyroscope_logs.dart';
+import 'package:scoped_model/scoped_model.dart';
 import 'package:sensors/sensors.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rxdart/rxdart.dart';
@@ -81,145 +82,192 @@ class _HomePageState extends State<HomePage> {
     // creating a new MARKER
     markers[markerId] = marker;
 
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        title: Text('Safe Ride'),
-        actions: <Widget>[
-          BadgeIconButton(
-              itemCount: 4,
-              icon: Icon(Icons.notification_important),
-              badgeColor: Colors.green,
-              badgeTextColor: Colors.white,
-              hideZeroCount: true,
-              onPressed: () {
-                showInSnackBar('Notification sms from next of kin');
-                // Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //         builder: (context) => ShoppingCartPage()));
-              })
-        ],
-      ),
-      body: Screenshot(
-        controller: screenshotController,
-        child: Stack(
-          children: <Widget>[
-            // Max Size
-            Container(
-              child: GoogleMap(
-                mapType: MapType.normal,
-                initialCameraPosition: kGooglePlex,
-                onMapCreated: (GoogleMapController controller) {
-                  _controller.complete(controller);
-                },
-                markers: Set<Marker>.of(markers.values),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Container(
-                  padding: EdgeInsets.all(10),
-                  height: 200,
-                  width: 150,
-                  child:
-                      _imageFile != null ? Image.file(_imageFile) : Container(),
-                ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.topCenter,
-              child: Container(
-                padding: EdgeInsets.all(40),
-                child: SpeedOMeter(
-                    start: start,
-                    end: end,
-                    highlightStart: (_lowerValue / end),
-                    highlightEnd: (_upperValue / end),
-                    themeData: speedometerTheme,
-                    eventObservable: this.eventObservable),
-                height: MediaQuery.of(context).size.width * 3 / 4,
-                width: MediaQuery.of(context).size.width * 3 / 4,
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: Container(
-                padding: EdgeInsets.all(40),
-                child: Padding(
-                  padding: EdgeInsets.only(top: 10.0),
-                  child: InkWell(
-                    onTap: () => _showDialog(),
-                    child: Container(
-                      padding: const EdgeInsets.all(15.0),
-                      decoration: new BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: speedColorBackground,
-                      ),
-                      child: Center(
-                          child: Column(
-                        children: <Widget>[
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text(intialSpeed.toString(),
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 40,
-                                  color: speedColor)),
-                          Text("KMP", style: TextStyle(color: speedColor))
-                        ],
-                      )),
-                    ),
-                  ),
-                ),
-                height: MediaQuery.of(context).size.width / 2,
-                width: MediaQuery.of(context).size.width / 2,
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Container(
-                padding: EdgeInsets.all(40),
-                child: Padding(
-                  padding: EdgeInsets.only(top: 10.0),
-                  child: InkWell(
-                    onTap: () {
-                      screenshotController.capture().then((File image) {
-                        setState(() {
-                          _imageFile = image;
-                        });
+    return ScopedModelDescendant(
+      builder: (BuildContext context, Widget child, MainModel model) {
+        return Scaffold(
+          key: _scaffoldKey,
+          appBar: AppBar(
+            title: Text('Safe Ride'),
+            actions: <Widget>[
+              BadgeIconButton(
+                  itemCount: 4,
+                  icon: Icon(Icons.notification_important),
+                  badgeColor: Colors.green,
+                  badgeTextColor: Colors.white,
+                  hideZeroCount: true,
+                  onPressed: () {
+                    showInSnackBar('Notification sms from next of kin');
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (context) => ShoppingCartPage()));
+                  })
+            ],
+          ),
+          body: Screenshot(
+            controller: screenshotController,
+            child: Stack(
+              children: <Widget>[
+                // Max Size
 
-                        showInSnackBar("Screenshot captured successfully");
-                      }).catchError((onError) {});
+                Container(
+                  child: GoogleMap(
+                    mapType: MapType.normal,
+                    initialCameraPosition: kGooglePlex,
+                    onMapCreated: (GoogleMapController controller) {
+                      _controller.complete(controller);
                     },
-                    child: Container(
-                      padding: const EdgeInsets.all(15.0),
-                      decoration: new BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.black38,
-                      ),
-                      child: Icon(
-                        Icons.camera_enhance,
-                        size: 40,
-                        color: ThemeColor.Colors.saferidePrimaryColor,
-                      ),
-                    ),
+                    markers: Set<Marker>.of(markers.values),
                   ),
                 ),
-                height: MediaQuery.of(context).size.width / 2,
-                width: MediaQuery.of(context).size.width / 2,
-              ),
-            )
-          ],
-        ),
-      ),
-      drawer: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.80,
-        child: DrawerPage(),
-      ),
+
+                model.showScreenShot
+                    ? Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                    width: 4,
+                                    color:
+                                        ThemeColor.Colors.saferidePrimaryColor),
+                              ),
+                              height: 200,
+                              width: 150,
+                              child: Column(
+                                children: <Widget>[
+                                  Expanded(
+                                    flex: 1,
+                                    child: Container(
+                                      color: Colors.black12,
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: <Widget>[
+                                          FlatButton(
+                                            color: Colors.red,
+                                            child: Icon(
+                                              Icons.close,
+                                              color: Colors.white,
+                                            ),
+                                            onPressed: () {
+                                              model.setScreenShot(
+                                                  status: false);
+                                            },
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 6,
+                                    child: _imageFile != null
+                                        ? Image.file(_imageFile)
+                                        : Container(),
+                                  )
+                                ],
+                              )),
+                        ),
+                      )
+                    : Container(),
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: Container(
+                    padding: EdgeInsets.all(40),
+                    child: SpeedOMeter(
+                        start: start,
+                        end: end,
+                        highlightStart: (_lowerValue / end),
+                        highlightEnd: (_upperValue / end),
+                        themeData: speedometerTheme,
+                        eventObservable: this.eventObservable),
+                    height: MediaQuery.of(context).size.width * 3 / 4,
+                    width: MediaQuery.of(context).size.width * 3 / 4,
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Container(
+                    padding: EdgeInsets.all(40),
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 10.0),
+                      child: InkWell(
+                        onTap: () => _showDialog(),
+                        child: Container(
+                          padding: const EdgeInsets.all(15.0),
+                          decoration: new BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: speedColorBackground,
+                          ),
+                          child: Center(
+                              child: Column(
+                            children: <Widget>[
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Text(intialSpeed.toString(),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 40,
+                                      color: speedColor)),
+                              Text("KMP", style: TextStyle(color: speedColor))
+                            ],
+                          )),
+                        ),
+                      ),
+                    ),
+                    height: MediaQuery.of(context).size.width / 2,
+                    width: MediaQuery.of(context).size.width / 2,
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: Container(
+                    padding: EdgeInsets.all(40),
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 10.0),
+                      child: InkWell(
+                        onTap: () {
+                          screenshotController.capture().then((File image) {
+                            setState(() {
+                              _imageFile = image;
+                            });
+
+                            showInSnackBar("Screenshot captured successfully");
+                            model.setScreenShot(status: true);
+                          }).catchError((onError) {});
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(15.0),
+                          decoration: new BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.black38,
+                          ),
+                          child: Icon(
+                            Icons.camera_enhance,
+                            size: 40,
+                            color: ThemeColor.Colors.saferidePrimaryColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                    height: MediaQuery.of(context).size.width / 2,
+                    width: MediaQuery.of(context).size.width / 2,
+                  ),
+                )
+              ],
+            ),
+          ),
+          //  Screenshot(
+          //   controller: screenshotController,
+          //   child: ),
+          drawer: SizedBox(
+            width: MediaQuery.of(context).size.width * 0.80,
+            child: DrawerPage(),
+          ),
+        );
+      },
     );
   }
 
