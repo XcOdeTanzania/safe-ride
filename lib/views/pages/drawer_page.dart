@@ -6,6 +6,8 @@ import 'package:safe_ride/constants/constants.dart';
 import 'package:safe_ride/data/main.dart';
 import 'package:scoped_model/scoped_model.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+
 const String _kAsset0 = 'assets/icons/male.jpg';
 
 class DrawerPage extends StatefulWidget {
@@ -14,6 +16,7 @@ class DrawerPage extends StatefulWidget {
 }
 
 class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   static final Animatable<Offset> _drawerDetailsTween = Tween<Offset>(
@@ -28,8 +31,15 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
   Animation<Offset> _drawerDetailsPosition;
   bool _showDrawerContents = true;
 
+  FirebaseUser _currentUser;
+
   @override
   void initState() {
+
+    _auth.currentUser().then((currentUser){
+      _currentUser = currentUser;
+    });
+
     super.initState();
     _controller = AnimationController(
       vsync: this,
@@ -64,14 +74,16 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
               children: <Widget>[
                 UserAccountsDrawerHeader(
                   accountName: Text(
-                    model.authenticatedUser.displayname,
+                    //model.authenticatedUser.displayname,
+                    _currentUser.displayName,
                     style: const TextStyle(
                       fontSize: 20.0,
                       fontFamily: 'mermaid',
                     ),
                   ),
                   accountEmail: Text(
-                    model.authenticatedUser.email,
+                    //model.authenticatedUser.email,
+                    _currentUser.email,
                     style: const TextStyle(
                       fontSize: 15.0,
                       fontFamily: 'mermaid',
@@ -162,6 +174,22 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                                           context, insightsScreen);
                                     },
                                   ),
+                                  ListTile(
+                                    leading: const Icon(
+                                      Icons.data_usage,
+                                    ),
+                                    title: Text(
+                                      'Logs',
+                                      style: const TextStyle(
+                                        fontSize: 15.0,
+                                        fontFamily: 'mermaid',
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      Navigator.pushNamed(context, logsScreen);
+                                    },
+                                  ),
                                   Divider(),
                                   ListTile(
                                       title: Text(
@@ -187,7 +215,7 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                                     onTap: () {
                                       Navigator.pop(context);
                                       model.signOut().then((val) {
-                                        Navigator.of(context).pop();
+                                       
                                       });
                                     },
                                   ),

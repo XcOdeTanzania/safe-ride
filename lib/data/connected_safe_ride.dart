@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:safe_ride/models/logs.dart';
 import 'package:safe_ride/models/user.dart';
 import 'package:scoped_model/scoped_model.dart';
-
 
 mixin ConnectedSafeRideModel on Model {
   //fire base current user..
@@ -11,27 +14,33 @@ mixin ConnectedSafeRideModel on Model {
 
   //fire base autheFnticated user..
   FirebaseUser _user;
+  List<Logs> _availableLogs = [];
 }
-mixin UtilityModel on ConnectedSafeRideModel {}
+mixin UtilityModel on ConnectedSafeRideModel {
+  List<Logs> getLogs() {
+    if (_availableLogs == null) {
+      return <Logs>[];
+    }
+    return List<Logs>.from(_availableLogs);
+  }
+
+  void addNewLog({@required Logs log}) {
+    _availableLogs.add(log);
+    notifyListeners();
+  }
+}
 mixin LoginModel on ConnectedSafeRideModel {
   PublishSubject<bool> _userSubject = PublishSubject();
 
-  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: [
-    'email',
-    'https://www.googleapis.com/auth/admin.directory.customer.readonly',
-  ],);
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   static User _authenticatedUser;
 
   Future<bool> signInWithGoogle() async {
     bool status;
-    print('locceee');
-
 
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
-
-
 
     final GoogleSignInAuthentication googleAuth =
         await googleUser.authentication;
@@ -39,8 +48,6 @@ mixin LoginModel on ConnectedSafeRideModel {
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
-
-
 
     _user = await _auth.signInWithCredential(credential);
 
@@ -64,7 +71,7 @@ mixin LoginModel on ConnectedSafeRideModel {
     } else {
       status = false;
     }
-
+    _userSubject.add(true);
     notifyListeners();
     return status;
   }

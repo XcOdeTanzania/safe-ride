@@ -36,7 +36,6 @@ dependencies:
   image_picker: ^0.6.0+9
   dio: ^2.1.7
   google_maps_flutter: ^0.5.7
-  geolocator: ^5.0.0
   sensors: ^0.4.0+1
   speedometer: ^1.0.7
   charts_flutter: ^0.6.0
@@ -46,6 +45,7 @@ dependencies:
   firebase_auth: ^0.11.1+7
   scoped_model: ^1.0.1
   google_sign_in: ^4.0.2
+  location: ^2.3.5
 
  
 
