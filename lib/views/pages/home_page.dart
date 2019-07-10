@@ -6,6 +6,7 @@ import 'package:safe_ride/constants/constants.dart';
 import 'package:safe_ride/models/accelerometer.dart';
 import 'package:safe_ride/models/gps_logs.dart';
 import 'package:safe_ride/models/gyroscope_logs.dart';
+import 'package:safe_ride/utils/enums.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:sensors/sensors.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -66,6 +67,10 @@ class _HomePageState extends State<HomePage> {
     });
 
     _getLocation();
+
+    if (widget.model.userType == null) {
+      startTime();
+    }
   }
 
   @override
@@ -143,16 +148,19 @@ class _HomePageState extends State<HomePage> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
                                         children: <Widget>[
-                                          FlatButton(
-                                            color: Colors.red,
-                                            child: Icon(
-                                              Icons.close,
-                                              color: Colors.white,
+                                          Expanded(
+                                            child: FlatButton(
+                                              color: Colors.red,
+                                              child: Text('Share',
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                              onPressed: () {
+                                                model.setScreenShot(
+                                                    status: false);
+                                              },
                                             ),
-                                            onPressed: () {
-                                              model.setScreenShot(
-                                                  status: false);
-                                            },
                                           )
                                         ],
                                       ),
@@ -161,7 +169,15 @@ class _HomePageState extends State<HomePage> {
                                   Expanded(
                                     flex: 6,
                                     child: _imageFile != null
-                                        ? Image.file(_imageFile)
+                                        ? Container(
+                                            decoration: BoxDecoration(
+                                                image: DecorationImage(
+                                              image: new AssetImage(
+                                                  'assets/icons/car.png'),
+                                              fit: BoxFit.cover,
+                                            )),
+                                            child: Image.file(_imageFile),
+                                          )
                                         : Container(),
                                   )
                                 ],
@@ -257,9 +273,6 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
-          //  Screenshot(
-          //   controller: screenshotController,
-          //   child: ),
           drawer: SizedBox(
             width: MediaQuery.of(context).size.width * 0.80,
             child: DrawerPage(),
@@ -451,6 +464,78 @@ class _HomePageState extends State<HomePage> {
               },
             ),
           ],
+        );
+      },
+    );
+  }
+
+  startTime() async {
+    var _duration = new Duration(seconds: 6);
+    return new Timer(_duration, _showConfirmDialog);
+  }
+
+  void _showConfirmDialog() {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Color(0xFFf43f5f),
+          title: Center(
+              child: Text('Set User Type',
+                  style: TextStyle(
+                      fontFamily: 'itikaf',
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold))),
+          content: SingleChildScrollView(
+              child: Column(
+            children: <Widget>[
+              Text('Are you a Driver or Passanger ?',
+                  style: TextStyle(
+                      fontFamily: 'itikaf',
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold)),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      child: FlatButton(
+                        color: Colors.blue,
+                        child: Text('DRIVER',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold)),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          widget.model.setUserType(type: UserType.driver);
+                        },
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      child: FlatButton(
+                        color: Colors.blue,
+                        child: Text('PASSANGER',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold)),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          widget.model.setUserType(type: UserType.passanger);
+                        },
+                      ),
+                    ),
+                  )
+                ],
+              )
+            ],
+          )),
         );
       },
     );

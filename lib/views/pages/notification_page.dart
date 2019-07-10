@@ -15,17 +15,19 @@ class NotificationPage extends StatelessWidget {
               itemCount: 10,
               itemBuilder: (BuildContext context, int index) {
                 return Dismissible(
+                  background: Container(height: 10, color: Colors.red),
+                  key: Key(index.toString()),
                   child: ListTile(
-                  leading: Icon(
-                    Icons.notifications,
-                    color: Color(0xFFf43f5f),
+                    leading: Icon(
+                      Icons.notifications,
+                      color: Color(0xFFf43f5f),
+                    ),
+                    title: Text(
+                      'notification ' + (index + 1).toString(),
+                      textAlign: TextAlign.left,
+                    ),
+                    onTap: () {},
                   ),
-                  title: Text(
-                    'notification ' + (index + 1).toString(),
-                    textAlign: TextAlign.left,
-                  ),
-                  onTap: () {},
-                ),
                 );
               },
             ));

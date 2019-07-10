@@ -8,6 +8,7 @@ import 'package:safe_ride/views/pages/insights_page.dart';
 import 'package:safe_ride/views/pages/login_page.dart';
 import 'package:safe_ride/views/pages/logs_page.dart';
 import 'package:safe_ride/views/pages/profile_page.dart';
+import 'package:safe_ride/views/pages/reports_page.dart';
 import 'package:safe_ride/views/screens/AnimatedSplashScreen.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -26,12 +27,9 @@ class _AppState extends State<App> {
 
   @override
   void initState() {
-//    _model.userSubject.listen((bool isAuthenticated) {
-//      setState(() {
-//        _isAuthenticated = isAuthenticated;
-//      });
-//    });
-    _isAuthenticated = _model.isLoggedIn;
+    _model.isLoggedIn().then((onValue) {
+      _isAuthenticated = onValue;
+    });
     super.initState();
   }
 
@@ -49,7 +47,7 @@ class _AppState extends State<App> {
                   model: _model,
                 )
               : LoginPage(),
-          profileScreen: (BuildContext context) => ProfilePage(),
+          profileScreen: (BuildContext context) => ProfileScreen(),
           insightsScreen: (BuildContext context) => InsightsPage(),
           logsScreen: (BuildContext context) => LogsPage(),
           gpsScreen: (BuildContext context) => GPSLogsPage(),
@@ -57,6 +55,7 @@ class _AppState extends State<App> {
               AccelerometerLogsPage(),
           gyroscopeScreen: (BuildContext context) => GyroscopeLogsPage(),
           notificationScreen: (BuildContext context) => NotificationPage(),
+          reportScreen: (BuildContext context) => ReportsPage(),
         },
       ),
       model: _model,
