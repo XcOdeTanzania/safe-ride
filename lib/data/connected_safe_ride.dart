@@ -207,7 +207,7 @@ mixin LoginModel on ConnectedSafeRideModel {
               'Access denied, user disabled. contact administrator for assistance';
           break;
         case 'ERROR_ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL':
-          // TODO: Handle choose previous providers
+         
           final graphResponse = await http.get(
               'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=$token');
           final profile = json.decode(graphResponse.body);
@@ -235,8 +235,7 @@ mixin LoginModel on ConnectedSafeRideModel {
       _message = 'User signin successfuly';
       _success = true;
     } else {
-      // TODO email exist handling
-      //user.linkWithCredential(pendingCred);
+    
       _success = false;
     }
     final Map<String, dynamic> _responseMap = {

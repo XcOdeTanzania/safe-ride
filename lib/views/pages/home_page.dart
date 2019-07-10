@@ -215,17 +215,21 @@ class _HomePageState extends State<HomePage> {
                             color: speedColorBackground,
                           ),
                           child: Center(
-                              child: Column(
+                              child: Stack(
                             children: <Widget>[
-                              SizedBox(
-                                height: 10,
+                              Align(
+                                alignment: Alignment.center,
+                                child: Text(intialSpeed.toString(),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 40,
+                                        color: speedColor)),
                               ),
-                              Text(intialSpeed.toString(),
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 40,
-                                      color: speedColor)),
-                              Text("KMP", style: TextStyle(color: speedColor))
+                              Align(
+                                  alignment: Alignment.bottomCenter,
+                                  child: Text("KMP",
+                                      style: TextStyle(color: speedColor),
+                                      overflow: TextOverflow.fade))
                             ],
                           )),
                         ),
@@ -310,7 +314,7 @@ class _HomePageState extends State<HomePage> {
           altitude: currentLocation.altitude,
           latitude: currentLocation.latitude,
           longitude: currentLocation.longitude,
-          speed: currentLocation.speed);
+          speed: currentLocation.speed * 3.6);
 
       widget.model.addNewGPSLog(log: _log);
 
