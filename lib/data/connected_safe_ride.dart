@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -9,6 +9,9 @@ import 'package:safe_ride/models/gps_logs.dart';
 import 'package:safe_ride/models/gyroscope_logs.dart';
 import 'package:safe_ride/models/user.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 mixin ConnectedSafeRideModel on Model {
   //fire base current user..
@@ -76,6 +79,19 @@ mixin LoginModel on ConnectedSafeRideModel {
 
   static User _authenticatedUser;
 
+  bool get isLoggedIn{
+    bool log;
+    _auth.currentUser().then((currentUser){
+      if(currentUser != null){
+        log = true;
+      } else {
+        log = false;
+      }
+
+    });
+    return log;
+  }
+
   Future<bool> signInWithGoogle() async {
     bool status;
 
@@ -113,6 +129,158 @@ mixin LoginModel on ConnectedSafeRideModel {
     _userSubject.add(true);
     notifyListeners();
     return status;
+  }
+
+  Future<Map<String, dynamic>> signInWithFaceBook() async {
+    final FacebookLogin facebookLogin = FacebookLogin();
+    bool success = false;
+    String message = 'Error occured';
+    FacebookLoginResult result =
+        await facebookLogin.logInWithReadPermissions(['email']);
+    switch (result.status) {
+      case FacebookLoginStatus.loggedIn:
+
+        _signInWithFacebook(result.accessToken.token).then((Map<String,dynamic> result) {
+          success = result['success'];
+          message = result['message'];
+        });
+//        _sendTokenToServer(result.accessToken.token);
+//        _showLoggedInUI();
+        break;
+      case FacebookLoginStatus.cancelledByUser:
+        success = false;
+        message = 'Facebook Signin cancelled';
+        // _showCancelledMessage();
+        break;
+      case FacebookLoginStatus.error:
+        success = false;
+        message = 'Error in Signin with Facebook ${result.errorMessage}';
+        //  _showErrorOnUI(result.errorMessage);
+        break;
+    }
+    Map<String, dynamic> signInResult = {"message": message, "success": success};
+
+    return signInResult;
+  }
+
+  Future<Map<String,dynamic>> _signInWithFacebook(String token) async {
+    bool _success = false;
+    String _message ;
+    
+    final AuthCredential credential = FacebookAuthProvider.getCredential(
+        accessToken: token //_tokenController.text,
+        );
+
+    try {
+      final FirebaseUser fbUser = await _auth.signInWithCredential(credential);
+      assert(fbUser.email != null);
+      assert(fbUser.displayName != null);
+      assert(!fbUser.isAnonymous);
+      assert(await fbUser.getIdToken() != null);
+
+      final FirebaseUser currentUser = await _auth.currentUser();
+      assert(user.uid == currentUser.uid);
+    } on PlatformException catch (e) {
+      _success = false;
+      switch (e.code) {
+        case 'ERROR_INVALID_CREDENTIAL':
+          _message = 'User verification failed, Invalid Credential';
+          break;
+        case 'ERROR_USER_DISABLED':
+          _message = 'Access denied, user disabled. contact administrator for assistance';
+          break;
+        case 'ERROR_ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL':
+          // TODO: Handle choose previous providers
+          final graphResponse = await http.get(
+              'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=$token');
+          final profile = json.decode(graphResponse.body);
+          print('Email: ${profile['email']}');
+         List<String> providers = await _auth.fetchSignInMethodsForEmail(email: profile['email'] );
+         String existingProvider='';
+         for(String provider in providers){
+           print('provider : $provider');
+           existingProvider = provider;
+         }
+          _message = 'Not new here, already registered with $existingProvider with ${profile['email']}';
+          break;
+        case 'ERROR_OPERATION_NOT_ALLOWED':
+        case 'ERROR_INVALID_ACTION_CODE':
+        _message = 'Error During Signing. ${e.message}';
+          break;
+        case 'ERROR_NETWORK_REQUEST_FAILED':
+          _message = 'Network error, check your internet connection';
+          break;
+      }
+    }
+    if (user != null) {
+      _message = 'User signin successfuly';
+      _success = true;
+    } else {
+      // TODO email exist handling
+      //user.linkWithCredential(pendingCred);
+      _success = false;
+    }
+    final Map<String,dynamic> _responseMap = {
+      'success':_success,
+      'message':_message
+    };
+
+    return _responseMap;
+  }
+
+  Future<Map<String, dynamic>> register({String email, String password}) async {
+    bool _success = false;
+    String _message = '';
+    bool _linking = false;
+
+
+    try {
+      final FirebaseUser mailUser = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+    } on PlatformException catch (e) {
+      switch (e.code) {
+        case 'ERROR_EMAIL_ALREADY_IN_USE':
+          print('Email: $email');
+          List<String> providers = await _auth.fetchSignInMethodsForEmail(email: email );
+          for(String provider in providers){
+            print(provider);
+          }
+          _message = 'The email address is already in use by another account.';
+          _linking = true;
+          break;
+        case 'ERROR_WEAK_PASSWORD':
+          _message = 'Password too week, minimum six characters required';
+          _linking = false;
+          break;
+        case 'ERROR_INVALID_EMAIL':
+          _message = 'Invalid Email';
+          _linking = false;
+          break;
+        case 'ERROR_NETWORK_REQUEST_FAILED':
+          _message =
+              'Error in network, make sure you are connected to internet';
+          _linking = false;
+          break;
+        default:
+          _message = 'Error occured during signing in';
+          _linking = false;
+          break;
+      }
+    }
+    if (user != null) {
+      _success = true;
+      _message = 'Signin successfuly';
+    } else {
+      _success = false;
+    }
+    Map<String, dynamic> respond = {
+      'success': _success,
+      'message': _message,
+      'linking': _linking
+    };
+    return respond;
   }
 
   Future<void> signOut() async {

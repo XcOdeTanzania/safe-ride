@@ -64,5 +64,38 @@
 	<false/>
 	<key>io.flutter.embedded_views_preview</key>
 	<string>YES</string>
+
+	<!-- Facebook Login Implementation -->
+	<key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <!--
+                  Replace "000000000000" with your Facebook App ID here.
+                  **NOTE**: The scheme needs to start with `fb` and then your ID.
+                -->
+                <string>fb000000000000</string>
+            </array>
+        </dict>
+    </array>
+
+    <key>FacebookAppID</key>
+
+    <!-- Replace "000000000000" with your Facebook App ID here. -->
+    <string>349591995936925</string>
+    <key>FacebookDisplayName</key>
+
+    <!-- Replace "YOUR_APP_NAME" with your Facebook App name. -->
+    <string>Safe Ride</string>
+
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>fbapi</string>
+        <string>fb-messenger-share-api</string>
+        <string>fbauth2</string>
+        <string>fbshareextension</string>
+    </array>
+    <!-- End of Facebook Implementation -->
 </dict>
 </plist>
