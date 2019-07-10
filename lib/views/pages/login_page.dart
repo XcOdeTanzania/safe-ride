@@ -4,6 +4,7 @@ import 'package:safe_ride/constants/constants.dart';
 import 'package:safe_ride/data/main.dart';
 
 import 'package:safe_ride/styles/style.dart' as ThemeColor;
+import 'package:safe_ride/views/pages/signup_page.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class LoginPage extends StatefulWidget {
@@ -295,7 +296,6 @@ class _LoginPageState extends State<LoginPage> {
                       child: InkWell(
                         onTap: () {
                           model.signInWithGoogle().then((value) {
-                            print('pooooooo');
                           });
                         },
                         child: Container(
@@ -315,8 +315,13 @@ class _LoginPageState extends State<LoginPage> {
                       padding: EdgeInsets.only(top: 10.0),
                       child: InkWell(
                         onTap: () {
-                          model.signOut();
-                          showInSnackBar("Facebook button pressed");
+                          //model.signOut();
+                          model.signInWithFaceBook().then((Map<String,dynamic> response){
+                            if(response['success']) showInSnackBar("Signin Successfuly");
+                            else
+                              showInSnackBar('Signin Failled, ${response['message']}');
+                          });
+
                         },
                         child: Container(
                           padding: const EdgeInsets.all(15.0),
@@ -332,6 +337,73 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ],
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: new LinearGradient(
+                              colors: [
+                                Colors.white10,
+                                Colors.white,
+                              ],
+                              begin: const FractionalOffset(0.0, 0.0),
+                              end: const FractionalOffset(1.0, 1.0),
+                              stops: [0.0, 1.0],
+                              tileMode: TileMode.clamp),
+                        ),
+                        width: 100.0,
+                        height: 1.0,
+                      ),
+                      SizedBox(
+                        height: 50,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: 15.0, right: 15.0),
+                        child: Text(
+                          "Or, don't have account ?",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.0,
+                              fontFamily: "WorkSansMedium"),
+                        ),
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: new LinearGradient(
+                              colors: [
+                                Colors.white,
+                                Colors.white10,
+                              ],
+                              begin: const FractionalOffset(0.0, 0.0),
+                              end: const FractionalOffset(1.0, 1.0),
+                              stops: [0.0, 1.0],
+                              tileMode: TileMode.clamp),
+                        ),
+                        width: 100.0,
+                        height: 1.0,
+                      ),
+                    ],
+                  ),
+                ),
+                Center(
+                  child: Padding(
+                    padding:
+                    EdgeInsets.only(left: 15.0, right: 15.0, bottom: 10),
+                    child: FlatButton(onPressed: (){
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=>SignupPage()));
+                    }, child: Text(
+                      "Register",
+                      style: TextStyle(
+                          decoration: TextDecoration.underline,
+                          color: Colors.white,
+                          fontSize: 16.0,
+                          fontFamily: "WorkSansMedium"),
+                    )),
+                  ),
                 ),
                 Padding(
                   padding: EdgeInsets.only(left: 40, right: 40, top: 20),
