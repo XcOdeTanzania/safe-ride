@@ -295,7 +295,9 @@ class _LoginPageState extends State<LoginPage> {
                       padding: EdgeInsets.only(top: 10.0, right: 40.0),
                       child: InkWell(
                         onTap: () {
-                          model.signInWithGoogle().then((value) {
+                          model.signInWithGoogle().then((bool value) {
+                            if(value) showInSnackBar('Sign in Succesfuly');
+                            else showInSnackBar('Error while signin with google');
                           });
                         },
                         child: Container(
@@ -364,7 +366,7 @@ class _LoginPageState extends State<LoginPage> {
                       Padding(
                         padding: EdgeInsets.only(left: 15.0, right: 15.0),
                         child: Text(
-                          "Or, don't have account ?",
+                          "Don't have account ?",
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: 16.0,

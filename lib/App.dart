@@ -10,6 +10,7 @@ import 'package:safe_ride/views/pages/logs_page.dart';
 import 'package:safe_ride/views/pages/profile_page.dart';
 import 'package:safe_ride/views/screens/AnimatedSplashScreen.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'constants/constants.dart';
 import 'data/main.dart';
@@ -30,7 +31,11 @@ class _AppState extends State<App> {
 //        _isAuthenticated = isAuthenticated;
 //      });
 //    });
-    _isAuthenticated = _model.isLoggedIn;
+     _model.isLoggedIn.then((value){
+       setState(() {
+         _isAuthenticated = value;
+       });
+     });
     super.initState();
   }
 
@@ -59,5 +64,19 @@ class _AppState extends State<App> {
       ),
       model: _model,
     );
+  }
+
+  bool get isLoggedIn {
+    //=> !_isLoggedIn;
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    bool log = false;
+    _auth.currentUser().then((currentUser) {
+      if (currentUser != null) {
+        log = true;
+      } else {
+        log = false;
+      }
+    });
+    return log;
   }
 }

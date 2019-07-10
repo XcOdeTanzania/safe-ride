@@ -79,17 +79,10 @@ mixin LoginModel on ConnectedSafeRideModel {
 
   static User _authenticatedUser;
 
-  bool get isLoggedIn{
-    bool log;
-    _auth.currentUser().then((currentUser){
-      if(currentUser != null){
-        log = true;
-      } else {
-        log = false;
-      }
-
-    });
-    return log;
+  Future<bool> get isLoggedIn async {
+   FirebaseUser user = await _auth.currentUser();
+   if(user != null) return true;
+   else return false;
   }
 
   Future<bool> signInWithGoogle() async {
