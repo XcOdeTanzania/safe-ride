@@ -13,6 +13,7 @@ import 'package:scoped_model/scoped_model.dart';
 
 import 'constants/constants.dart';
 import 'data/main.dart';
+import 'views/pages/notification_page.dart';
 
 class App extends StatefulWidget {
   @override
@@ -54,6 +55,7 @@ class _AppState extends State<App> {
           accelerometerScreen: (BuildContext context) =>
               AccelerometerLogsPage(),
           gyroscopeScreen: (BuildContext context) => GyroscopeLogsPage(),
+          notificationScreen: (BuildContext context) => NotificationPage(),
         },
       ),
       model: _model,

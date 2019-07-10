@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:safe_ride/constants/constants.dart';
 import 'package:safe_ride/models/accelerometer.dart';
 import 'package:safe_ride/models/gps_logs.dart';
 import 'package:safe_ride/models/gyroscope_logs.dart';
@@ -97,10 +98,7 @@ class _HomePageState extends State<HomePage> {
                   hideZeroCount: true,
                   onPressed: () {
                     showInSnackBar('Notification sms from next of kin');
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) => ShoppingCartPage()));
+                    Navigator.pushNamed(context, notificationScreen);
                   })
             ],
           ),
