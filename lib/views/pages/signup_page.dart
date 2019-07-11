@@ -433,16 +433,6 @@ class _SignupPageState extends State<SignupPage> {
                       SizedBox(
                         height: 50,
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 15.0, right: 15.0),
-                        child: Text(
-                          "Or, you have an account ?",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16.0,
-                              fontFamily: "WorkSansMedium"),
-                        ),
-                      ),
                       Container(
                         decoration: BoxDecoration(
                           gradient: new LinearGradient(
@@ -472,7 +462,7 @@ class _SignupPageState extends State<SignupPage> {
                                   builder: (context) => LoginPage()));
                         },
                         child: Text(
-                          "Login",
+                          "Do you have an account?, Login!",
                           style: TextStyle(
                               decoration: TextDecoration.underline,
                               color: Colors.white,

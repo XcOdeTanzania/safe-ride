@@ -78,6 +78,14 @@
                 <string>fb000000000000</string>
             </array>
         </dict>
+		   <dict>
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <string>com.googleusercontent.apps.833243655916-no70utm8quavkv7ksvgjdidornfib5dd</string>
+        </array>
+    </dict>
     </array>
 
     <key>FacebookAppID</key>

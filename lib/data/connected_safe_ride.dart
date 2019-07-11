@@ -29,6 +29,7 @@ mixin ConnectedSafeRideModel on Model {
   List<GyroscopeLogs> _availableGyroscopeLogs = [];
 
   bool _showScreenShot = false;
+  bool _loginLoader = false;
 }
 mixin UtilityModel on ConnectedSafeRideModel {
   List<GPSLogs> getGPSLogs() {
@@ -81,6 +82,15 @@ mixin UtilityModel on ConnectedSafeRideModel {
     notifyListeners();
   }
 
+  //loaders .... _loginLoader
+  get loginLoader => _loginLoader;
+
+  void setLoginLoader({@required bool status}) {
+    _loginLoader = status;
+
+    notifyListeners();
+  }
+
   UserType get userType => _userType;
 }
 mixin LoginModel on ConnectedSafeRideModel {
@@ -91,18 +101,17 @@ mixin LoginModel on ConnectedSafeRideModel {
 
   static User _authenticatedUser;
 
-  Future<bool> isLoggedIn() async {
-    bool log;
+  Future<void> autoAuthenticate() async {
     await _auth.currentUser().then((currentUser) {
       if (currentUser != null) {
         _currentUser = currentUser;
         notifyListeners();
-        log = true;
+        _userSubject.add(true);
       } else {
-        log = false;
+        _userSubject.add(false);
       }
     });
-    return log;
+    notifyListeners();
   }
 
   Future<bool> signInWithGoogle() async {
@@ -207,7 +216,6 @@ mixin LoginModel on ConnectedSafeRideModel {
               'Access denied, user disabled. contact administrator for assistance';
           break;
         case 'ERROR_ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL':
-         
           final graphResponse = await http.get(
               'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=$token');
           final profile = json.decode(graphResponse.body);
@@ -235,7 +243,6 @@ mixin LoginModel on ConnectedSafeRideModel {
       _message = 'User signin successfuly';
       _success = true;
     } else {
-    
       _success = false;
     }
     final Map<String, dynamic> _responseMap = {
@@ -305,7 +312,6 @@ mixin LoginModel on ConnectedSafeRideModel {
   Future<void> signOut() async {
     await _googleSignIn.signOut().then((val) {
       _userSubject.add(false);
-
       notifyListeners();
     });
   }
