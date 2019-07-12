@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:safe_ride/data/main.dart';
+import 'package:safe_ride/views/widgets/alerts/no_data.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:safe_ride/styles/style.dart' as ThemeColor;
 
 class GPSLogsPage extends StatelessWidget {
   @override
@@ -134,7 +136,11 @@ class GPSLogsPage extends StatelessWidget {
                       );
                     },
                   )
-                : Container());
+                : NoDataYet(
+                    color: ThemeColor.Colors.saferidePrimaryColor,
+                    icon: Icons.gps_fixed,
+                    title: 'No data recorded yet',
+                  ));
       },
     );
   }

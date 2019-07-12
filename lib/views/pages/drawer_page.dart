@@ -5,7 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:safe_ride/constants/constants.dart';
 import 'package:safe_ride/data/main.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 
 const String _kAsset0 = 'assets/icons/male.jpg';
 
@@ -16,9 +16,6 @@ class DrawerPage extends StatefulWidget {
 
 class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  FirebaseUser firebaseUser;
 
   static final Animatable<Offset> _drawerDetailsTween = Tween<Offset>(
     begin: const Offset(0.0, -1.0),
@@ -34,9 +31,6 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    _auth.currentUser().then((FirebaseUser user){
-      firebaseUser = user;
-    });
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 200),
@@ -71,14 +65,18 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
               children: <Widget>[
                 UserAccountsDrawerHeader(
                   accountName: Text(
-                    firebaseUser.displayName != null ? firebaseUser.displayName:'User',
+                    model.currentUser.displayName != null
+                        ? model.currentUser.displayName
+                        : 'User',
                     style: const TextStyle(
                       fontSize: 20.0,
                       fontFamily: 'mermaid',
                     ),
                   ),
                   accountEmail: Text(
-                    firebaseUser.email != null ?  firebaseUser.email : '',
+                    model.currentUser.email != null
+                        ? model.currentUser.email
+                        : '',
                     style: const TextStyle(
                       fontSize: 15.0,
                       fontFamily: 'mermaid',
@@ -137,7 +135,7 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                                   ),
                                   ListTile(
                                     leading: const Icon(
-                                      FontAwesomeIcons.userCircle,
+                                      Icons.person,
                                     ),
                                     title: Text(
                                       'Profile',
@@ -150,6 +148,40 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                                       Navigator.pop(context);
                                       Navigator.pushNamed(
                                           context, profileScreen);
+                                    },
+                                  ),
+                                  ListTile(
+                                    leading: const Icon(
+                                      Icons.notifications,
+                                    ),
+                                    title: Text(
+                                      'Messages',
+                                      style: const TextStyle(
+                                        fontSize: 15.0,
+                                        fontFamily: 'mermaid',
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      Navigator.pushNamed(
+                                          context, notificationScreen);
+                                    },
+                                  ),
+                                  ListTile(
+                                    leading: const Icon(
+                                      Icons.library_books,
+                                    ),
+                                    title: Text(
+                                      'Reports',
+                                      style: const TextStyle(
+                                        fontSize: 15.0,
+                                        fontFamily: 'mermaid',
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      Navigator.pushNamed(
+                                          context, reportScreen);
                                     },
                                   ),
                                   ListTile(
@@ -209,9 +241,7 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                                     ),
                                     onTap: () {
                                       Navigator.pop(context);
-                                      model.signOut().then((val) {
-                                       
-                                      });
+                                      model.signOut().then((val) {});
                                     },
                                   ),
                                 ],

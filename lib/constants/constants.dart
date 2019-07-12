@@ -7,3 +7,5 @@ String logsScreen = '/LogsScreen';
 String gpsScreen = '/GPSScreen';
 String accelerometerScreen = '/AccelerometerLogsScreen';
 String gyroscopeScreen = '/GyroscopeScreen';
+String notificationScreen = '/NotificationScreen';
+String reportScreen = '/ReportScreen';

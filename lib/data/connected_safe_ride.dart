@@ -8,6 +8,8 @@ import 'package:safe_ride/models/accelerometer.dart';
 import 'package:safe_ride/models/gps_logs.dart';
 import 'package:safe_ride/models/gyroscope_logs.dart';
 import 'package:safe_ride/models/user.dart';
+import 'package:safe_ride/utils/enums.dart';
+
 import 'package:scoped_model/scoped_model.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:http/http.dart' as http;
@@ -16,6 +18,9 @@ import 'dart:convert';
 mixin ConnectedSafeRideModel on Model {
   //fire base current user..
   FirebaseUser _currentUser;
+
+  //user type
+  UserType _userType;
 
   //fire base autheFnticated user..
   FirebaseUser _user;
@@ -62,6 +67,11 @@ mixin UtilityModel on ConnectedSafeRideModel {
     notifyListeners();
   }
 
+  void setUserType({@required UserType type}) {
+    _userType = type;
+    notifyListeners();
+  }
+
 //screenshots...
   get showScreenShot => _showScreenShot;
 
@@ -70,6 +80,8 @@ mixin UtilityModel on ConnectedSafeRideModel {
     print('object');
     notifyListeners();
   }
+
+  UserType get userType => _userType;
 }
 mixin LoginModel on ConnectedSafeRideModel {
   PublishSubject<bool> _userSubject = PublishSubject();
@@ -79,10 +91,18 @@ mixin LoginModel on ConnectedSafeRideModel {
 
   static User _authenticatedUser;
 
-  Future<bool> get isLoggedIn async {
-   FirebaseUser user = await _auth.currentUser();
-   if(user != null) return true;
-   else return false;
+  Future<bool> isLoggedIn() async {
+    bool log;
+    await _auth.currentUser().then((currentUser) {
+      if (currentUser != null) {
+        _currentUser = currentUser;
+        notifyListeners();
+        log = true;
+      } else {
+        log = false;
+      }
+    });
+    return log;
   }
 
   Future<bool> signInWithGoogle() async {
@@ -132,8 +152,8 @@ mixin LoginModel on ConnectedSafeRideModel {
         await facebookLogin.logInWithReadPermissions(['email']);
     switch (result.status) {
       case FacebookLoginStatus.loggedIn:
-
-        _signInWithFacebook(result.accessToken.token).then((Map<String,dynamic> result) {
+        _signInWithFacebook(result.accessToken.token)
+            .then((Map<String, dynamic> result) {
           success = result['success'];
           message = result['message'];
         });
@@ -151,15 +171,18 @@ mixin LoginModel on ConnectedSafeRideModel {
         //  _showErrorOnUI(result.errorMessage);
         break;
     }
-    Map<String, dynamic> signInResult = {"message": message, "success": success};
+    Map<String, dynamic> signInResult = {
+      "message": message,
+      "success": success
+    };
 
     return signInResult;
   }
 
-  Future<Map<String,dynamic>> _signInWithFacebook(String token) async {
+  Future<Map<String, dynamic>> _signInWithFacebook(String token) async {
     bool _success = false;
-    String _message ;
-    
+    String _message;
+
     final AuthCredential credential = FacebookAuthProvider.getCredential(
         accessToken: token //_tokenController.text,
         );
@@ -180,25 +203,28 @@ mixin LoginModel on ConnectedSafeRideModel {
           _message = 'User verification failed, Invalid Credential';
           break;
         case 'ERROR_USER_DISABLED':
-          _message = 'Access denied, user disabled. contact administrator for assistance';
+          _message =
+              'Access denied, user disabled. contact administrator for assistance';
           break;
         case 'ERROR_ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL':
-          // TODO: Handle choose previous providers
+         
           final graphResponse = await http.get(
               'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=$token');
           final profile = json.decode(graphResponse.body);
           print('Email: ${profile['email']}');
-         List<String> providers = await _auth.fetchSignInMethodsForEmail(email: profile['email'] );
-         String existingProvider='';
-         for(String provider in providers){
-           print('provider : $provider');
-           existingProvider = provider;
-         }
-          _message = 'Not new here, already registered with $existingProvider with ${profile['email']}';
+          List<String> providers =
+              await _auth.fetchSignInMethodsForEmail(email: profile['email']);
+          String existingProvider = '';
+          for (String provider in providers) {
+            print('provider : $provider');
+            existingProvider = provider;
+          }
+          _message =
+              'Not new here, already registered with $existingProvider with ${profile['email']}';
           break;
         case 'ERROR_OPERATION_NOT_ALLOWED':
         case 'ERROR_INVALID_ACTION_CODE':
-        _message = 'Error During Signing. ${e.message}';
+          _message = 'Error During Signing. ${e.message}';
           break;
         case 'ERROR_NETWORK_REQUEST_FAILED':
           _message = 'Network error, check your internet connection';
@@ -209,13 +235,12 @@ mixin LoginModel on ConnectedSafeRideModel {
       _message = 'User signin successfuly';
       _success = true;
     } else {
-      // TODO email exist handling
-      //user.linkWithCredential(pendingCred);
+    
       _success = false;
     }
-    final Map<String,dynamic> _responseMap = {
-      'success':_success,
-      'message':_message
+    final Map<String, dynamic> _responseMap = {
+      'success': _success,
+      'message': _message
     };
 
     return _responseMap;
@@ -226,18 +251,19 @@ mixin LoginModel on ConnectedSafeRideModel {
     String _message = '';
     bool _linking = false;
 
-
     try {
       final FirebaseUser mailUser = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+      print(mailUser);
     } on PlatformException catch (e) {
       switch (e.code) {
         case 'ERROR_EMAIL_ALREADY_IN_USE':
           print('Email: $email');
-          List<String> providers = await _auth.fetchSignInMethodsForEmail(email: email );
-          for(String provider in providers){
+          List<String> providers =
+              await _auth.fetchSignInMethodsForEmail(email: email);
+          for (String provider in providers) {
             print(provider);
           }
           _message = 'The email address is already in use by another account.';

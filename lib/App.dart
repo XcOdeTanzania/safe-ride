@@ -8,12 +8,13 @@ import 'package:safe_ride/views/pages/insights_page.dart';
 import 'package:safe_ride/views/pages/login_page.dart';
 import 'package:safe_ride/views/pages/logs_page.dart';
 import 'package:safe_ride/views/pages/profile_page.dart';
+import 'package:safe_ride/views/pages/reports_page.dart';
 import 'package:safe_ride/views/screens/AnimatedSplashScreen.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 import 'constants/constants.dart';
 import 'data/main.dart';
+import 'views/pages/notification_page.dart';
 
 class App extends StatefulWidget {
   @override
@@ -26,16 +27,9 @@ class _AppState extends State<App> {
 
   @override
   void initState() {
-//    _model.userSubject.listen((bool isAuthenticated) {
-//      setState(() {
-//        _isAuthenticated = isAuthenticated;
-//      });
-//    });
-     _model.isLoggedIn.then((value){
-       setState(() {
-         _isAuthenticated = value;
-       });
-     });
+    _model.isLoggedIn().then((onValue) {
+      _isAuthenticated = onValue;
+    });
     super.initState();
   }
 
@@ -53,30 +47,18 @@ class _AppState extends State<App> {
                   model: _model,
                 )
               : LoginPage(),
-          profileScreen: (BuildContext context) => ProfilePage(),
+          profileScreen: (BuildContext context) => ProfileScreen(),
           insightsScreen: (BuildContext context) => InsightsPage(),
           logsScreen: (BuildContext context) => LogsPage(),
           gpsScreen: (BuildContext context) => GPSLogsPage(),
           accelerometerScreen: (BuildContext context) =>
               AccelerometerLogsPage(),
           gyroscopeScreen: (BuildContext context) => GyroscopeLogsPage(),
+          notificationScreen: (BuildContext context) => NotificationPage(),
+          reportScreen: (BuildContext context) => ReportsPage(),
         },
       ),
       model: _model,
     );
-  }
-
-  bool get isLoggedIn {
-    //=> !_isLoggedIn;
-    final FirebaseAuth _auth = FirebaseAuth.instance;
-    bool log = false;
-    _auth.currentUser().then((currentUser) {
-      if (currentUser != null) {
-        log = true;
-      } else {
-        log = false;
-      }
-    });
-    return log;
   }
 }

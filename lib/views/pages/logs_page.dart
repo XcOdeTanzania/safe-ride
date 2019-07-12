@@ -19,7 +19,7 @@ class LogsPage extends StatelessWidget {
                   onTap: () {
                     Navigator.pushNamed(context, gpsScreen);
                   },
-                  leading: Icon(Icons.gradient),
+                  leading: Icon(Icons.gps_fixed),
                   title: Text('GPS Logs'),
                 ),
                 ListTile(
