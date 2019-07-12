@@ -140,6 +140,7 @@ mixin LoginModel on ConnectedSafeRideModel {
       _authenticatedUser = User(
           email: _currentUser.email,
           id: _currentUser.uid,
+          
           token: _currentUser.getIdToken().toString(),
           photoUrl: _currentUser.photoUrl,
           displayname: _currentUser.displayName);
