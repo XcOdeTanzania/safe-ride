@@ -27,8 +27,11 @@ class _AppState extends State<App> {
 
   @override
   void initState() {
-    _model.isLoggedIn().then((onValue) {
-      _isAuthenticated = onValue;
+    _model.autoAuthenticate();
+    _model.userSubject.listen((bool isAuthenticated) {
+      setState(() {
+        _isAuthenticated = isAuthenticated;
+      });
     });
     super.initState();
   }
