@@ -140,7 +140,6 @@ mixin LoginModel on ConnectedSafeRideModel {
       _authenticatedUser = User(
           email: _currentUser.email,
           id: _currentUser.uid,
-          
           token: _currentUser.getIdToken().toString(),
           photoUrl: _currentUser.photoUrl,
           displayname: _currentUser.displayName);
@@ -254,7 +253,8 @@ mixin LoginModel on ConnectedSafeRideModel {
     return _responseMap;
   }
 
-  Future<Map<String, dynamic>> register({String email, String password}) async {
+  Future<Map<String, dynamic>> signInWithEmail(
+      {@required String email, @required String password}) async {
     bool _success = false;
     String _message = '';
     bool _linking = false;

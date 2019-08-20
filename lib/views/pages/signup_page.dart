@@ -277,7 +277,7 @@ class _SignupPageState extends State<SignupPage> {
 
                         if (password.compareTo(passwordConfirm) == 0) {
                           model
-                              .register(
+                              .signInWithEmail(
                                   email: emailController.text,
                                   password: passwordController.text)
                               .then((Map<String, dynamic> response) {

@@ -10,7 +10,6 @@
     <application android:name="io.flutter.app.FlutterApplication" android:label="Safe Ride" android:icon="@mipmap/launcher_icon">
         <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyDmKA7AdMkb57GVMeOnOkdatlll4P8yeIo"/>
        
-    </application>
         <activity android:name=".MainActivity" android:launchMode="singleTop" android:theme="@style/LaunchTheme" android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode" android:hardwareAccelerated="true" android:windowSoftInputMode="adjustResize">
             <!-- This keeps the window background of the activity showing
                  until Flutter renders its first frame. It can be removed if
@@ -37,6 +36,7 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
+        </application>
         <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
         <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 </manifest>

@@ -18,7 +18,7 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
-	<!-- Google Sign-in Section -->
+<!-- Google Sign-in Section -->
 <key>CFBundleURLTypes</key>
 <array>
 	<dict>

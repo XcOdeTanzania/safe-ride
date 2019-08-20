@@ -14,21 +14,24 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final FocusNode myFocusNodeUsernameLogin = FocusNode();
-  final FocusNode myFocusNodePasswordLogin = FocusNode();
+  final FocusNode _emailFocusNode = FocusNode();
+  final FocusNode _passwordFocusNode = FocusNode();
 
-  TextEditingController loginUsernameController = TextEditingController();
-  TextEditingController loginPasswordController = TextEditingController();
+  TextEditingController _emailTextEditingController = TextEditingController();
+  TextEditingController _passwordloginTextEditingController =
+      TextEditingController();
   bool _obscureTextLogin = true;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   void dispose() {
-    myFocusNodeUsernameLogin.dispose();
-    myFocusNodePasswordLogin.dispose();
-    loginUsernameController.dispose();
-    loginPasswordController.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
+
+    _emailTextEditingController.dispose();
+    _passwordloginTextEditingController.dispose();
+
     super.dispose();
   }
 
@@ -97,8 +100,9 @@ class _LoginPageState extends State<LoginPage> {
                             primaryColorDark: Colors.red[50],
                           ),
                           child: TextField(
-                            focusNode: myFocusNodeUsernameLogin,
-                            controller: loginUsernameController,
+                            focusNode: _emailFocusNode,
+                            keyboardType: TextInputType.emailAddress,
+                            controller: _emailTextEditingController,
                             style: TextStyle(
                                 fontFamily: "WorkSansSemiBold",
                                 fontSize: 16.0,
@@ -110,15 +114,15 @@ class _LoginPageState extends State<LoginPage> {
                                     borderRadius: BorderRadius.circular(30),
                                     borderSide:
                                         BorderSide(color: Colors.white)),
-                                hintText: "Username",
-                                labelText: "Username",
+                                hintText: "Email",
+                                labelText: "Email",
                                 labelStyle: TextStyle(color: Colors.white),
                                 hintStyle: TextStyle(
                                     fontFamily: "WorkSansSemiBold",
                                     fontSize: 17.0,
                                     color: Colors.white),
                                 prefixIcon: Icon(
-                                  FontAwesomeIcons.user,
+                                  FontAwesomeIcons.envelope,
                                   size: 22.0,
                                   color: Colors.white,
                                 )),
@@ -134,8 +138,8 @@ class _LoginPageState extends State<LoginPage> {
                             primaryColorDark: Colors.red[50],
                           ),
                           child: TextField(
-                            focusNode: myFocusNodePasswordLogin,
-                            controller: loginPasswordController,
+                            focusNode: _passwordFocusNode,
+                            controller: _passwordloginTextEditingController,
                             obscureText: _obscureTextLogin,
                             style: TextStyle(
                                 fontFamily: "WorkSansSemiBold",
@@ -213,8 +217,16 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             onPressed: () {
-                              Navigator.of(context)
-                                  .pushReplacementNamed(homeScreen);
+                              model
+                                  .signInWithEmail(
+                                      email: _emailTextEditingController.text,
+                                      password:
+                                          _passwordloginTextEditingController
+                                              .text)
+                                  .then((value) {
+                                Navigator.of(context)
+                                    .pushReplacementNamed(homeScreen);
+                              });
                             }),
                       ),
                       Padding(
