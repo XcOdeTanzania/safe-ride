@@ -1,12 +1,18 @@
 import 'dart:async';
+import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:safe_ride/api/api.dart';
 import 'package:safe_ride/models/accelerometer.dart';
 import 'package:safe_ride/models/gps_logs.dart';
 import 'package:safe_ride/models/gyroscope_logs.dart';
+import 'package:safe_ride/models/report.dart';
+import 'package:safe_ride/models/station.dart';
 import 'package:safe_ride/models/user.dart';
 import 'package:safe_ride/utils/enums.dart';
 
@@ -30,8 +36,30 @@ mixin ConnectedSafeRideModel on Model {
 
   bool _showScreenShot = false;
   bool _loginLoader = false;
+
+  List<Station> _availableStations;
+  List<Report> _availableReports;
+
+  File _pickedImage;
+
+  bool _isFetchingStationData = false;
+  bool _isFetchingReportData = false;
+  bool _isSubmitingReportData = false;
 }
 mixin UtilityModel on ConnectedSafeRideModel {
+  File file;
+  void chooseAmImage() async {
+    file = await ImagePicker.pickImage(source: ImageSource.gallery);
+    _pickedImage = file;
+    notifyListeners();
+  }
+
+  //get the choosen Image.
+
+  File get pickedImage {
+    return _pickedImage;
+  }
+
   List<GPSLogs> getGPSLogs() {
     if (_availableGPSLogs == null) {
       return <GPSLogs>[];
@@ -92,7 +120,12 @@ mixin UtilityModel on ConnectedSafeRideModel {
   }
 
   UserType get userType => _userType;
+
+  bool get isFetchingStationData => _isFetchingStationData;
+  bool get isFetchingReportData => _isFetchingReportData;
+  bool get isSubmitingReportData => _isSubmitingReportData;
 }
+
 mixin LoginModel on ConnectedSafeRideModel {
   PublishSubject<bool> _userSubject = PublishSubject();
 
@@ -330,4 +363,153 @@ mixin LoginModel on ConnectedSafeRideModel {
   //Get Authenticated user..
 
   User get authenticatedUser => _authenticatedUser;
+}
+
+mixin StationModel on ConnectedSafeRideModel {
+  // fetch all stations
+  Future<bool> fetchStations() async {
+    bool hasError = true;
+    _isFetchingStationData = true;
+    notifyListeners();
+
+    final List<Station> _fetchedStations = [];
+    try {
+      final http.Response response = await http.get(api + "stations");
+
+      final Map<String, dynamic> data = json.decode(response.body);
+
+      if (data['status']) {
+        data['stations'].forEach((pieceData) {
+          final station = Station.fromMap(pieceData);
+
+          _fetchedStations.add(station);
+        });
+        hasError = false;
+      }
+    } catch (error) {
+      hasError = true;
+    }
+    _availableStations = _fetchedStations;
+    _isFetchingStationData = false;
+    notifyListeners();
+
+    return hasError;
+  }
+
+  //getters
+  List<Station> getStations() {
+    if (_availableStations == null) {
+      return <Station>[];
+    }
+    return List<Station>.from(_availableStations);
+  }
+}
+
+mixin ReportModel on ConnectedSafeRideModel {
+  // fetch all reports
+  Future<bool> fetchReports() async {
+    bool hasError = true;
+    _isFetchingReportData = true;
+    notifyListeners();
+
+    final List<Report> _fetchedReports = [];
+    try {
+      final http.Response response = await http.get(api + "reports");
+
+      final Map<String, dynamic> data = json.decode(response.body);
+
+      if (data['status']) {
+        data['reports'].forEach((pieceData) {
+          final report = Report.fromMap(pieceData);
+
+          _fetchedReports.add(report);
+        });
+        hasError = false;
+      }
+    } catch (error) {
+      hasError = true;
+    }
+    _availableReports = _fetchedReports;
+    _isFetchingReportData = false;
+    notifyListeners();
+
+    return hasError;
+  }
+
+  // post  Report.
+  Future<bool> postReport(
+      {@required String message,
+      @required String platNo,
+      @required int stationId}) async {
+    _isSubmitingReportData = true;
+    bool hasError = false;
+    notifyListeners();
+
+    Dio dio = new Dio();
+    FormData formdata = new FormData();
+    formdata.add("file", new UploadFileInfo(_pickedImage, "image.jpeg"));
+    formdata.add("message", message);
+    formdata.add("plat_no", platNo);
+
+    dio
+        .post(api + "report/" + stationId.toString(),
+            data: formdata,
+            options: Options(
+                method: 'POST',
+                responseType: ResponseType.json // or ResponseType.JSON
+                ))
+        .then((response) {
+      final Map<String, dynamic> data = response.data;
+
+      if (data['status']) {
+        hasError = false;
+        _onCreateReport(
+            reportId: data['report']['id'],
+            message: data['report']['message'],
+            platNo: data['report']['platNo'],
+            image: data['report']['image'],
+            stationId: data['report']['station_id']);
+      } else {
+        hasError = true;
+      }
+    }).catchError((error) {
+      hasError = true;
+    });
+
+    _isSubmitingReportData = false;
+    resetImage();
+    notifyListeners();
+    return hasError;
+  }
+
+  void resetImage() {
+    _pickedImage = null;
+    notifyListeners();
+  }
+
+  void _onCreateReport({
+    @required int reportId,
+    @required String message,
+    @required String platNo,
+    @required int stationId,
+    @required String image,
+  }) {
+    final createdReport = Report(
+        id: reportId,
+        image: image,
+        message: message,
+        platNo: platNo,
+        stationId: stationId);
+    _availableReports.add(createdReport);
+
+    notifyListeners();
+  }
+
+  //getters
+  List<Report> getReports() {
+    if (_availableReports == null) {
+      return <Report>[];
+    }
+    return List<Report>.from(_availableReports);
+  }
 }

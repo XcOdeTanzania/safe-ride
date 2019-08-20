@@ -1,1 +1,1 @@
-const api = "http://127.0.0.1:8000//api/";
+const api = "https://qlicue.com/saferide/api/";

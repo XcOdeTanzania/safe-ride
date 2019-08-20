@@ -58,6 +58,7 @@ class _HomePageState extends State<HomePage> {
   ScreenshotController screenshotController = ScreenshotController();
   @override
   void initState() {
+    widget.model.fetchStations();
     super.initState();
 
     BitmapDescriptor.fromAssetImage(

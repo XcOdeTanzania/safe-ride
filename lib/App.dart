@@ -58,7 +58,9 @@ class _AppState extends State<App> {
               AccelerometerLogsPage(),
           gyroscopeScreen: (BuildContext context) => GyroscopeLogsPage(),
           notificationScreen: (BuildContext context) => NotificationPage(),
-          reportScreen: (BuildContext context) => ReportsPage(),
+          reportScreen: (BuildContext context) => ReportsPage(
+                model: _model,
+              ),
         },
       ),
       model: _model,
