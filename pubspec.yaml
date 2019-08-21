@@ -76,6 +76,9 @@ flutter:
      - assets/icons/female.jpg
      - assets/audios/
      - assets/icons/car.png
+     - assets/icons/police-station.png
+     - assets/img/default.jpg
+     - assets/img/map.png
 
   
   # fonts:

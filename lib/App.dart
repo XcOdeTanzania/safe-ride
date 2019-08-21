@@ -7,6 +7,8 @@ import 'package:safe_ride/views/pages/home_page.dart';
 import 'package:safe_ride/views/pages/insights_page.dart';
 import 'package:safe_ride/views/pages/login_page.dart';
 import 'package:safe_ride/views/pages/logs_page.dart';
+
+import 'package:safe_ride/views/pages/police_stations_page.dart';
 import 'package:safe_ride/views/pages/profile_page.dart';
 import 'package:safe_ride/views/pages/reports_page.dart';
 import 'package:safe_ride/views/screens/AnimatedSplashScreen.dart';
@@ -61,6 +63,10 @@ class _AppState extends State<App> {
           reportScreen: (BuildContext context) => ReportsPage(
                 model: _model,
               ),
+          stationScreen: (BuildContext context) => PoliceStationPage(
+                model: _model,
+              ),
+          
         },
       ),
       model: _model,

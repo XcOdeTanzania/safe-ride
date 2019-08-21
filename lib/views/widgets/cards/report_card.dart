@@ -24,11 +24,7 @@ class ReportCard extends StatelessWidget {
               fit: BoxFit.cover)),
     );
 
-    ///hero animation
-    // var hero = Hero(
-    //   tag: news.tag,
-    //   child: decoration,
-    // );
+   
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -38,40 +34,64 @@ class ReportCard extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.only(left: 10, right: 10, bottom: 5),
                 child: Container(
+                  margin: EdgeInsets.all(10),
                   height: 120,
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                    image: new AssetImage('assets/img/map.png'),
+                    fit: BoxFit.cover,
+                  )),
                   child: decoration,
                 ),
               ),
             ),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(report.platNo, style: TextStyle(color: Colors.black26)),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(right: 20),
-                    child: Text(
-                      report.message,
-                      maxLines: 3,
-                      style: TextStyle(fontWeight: FontWeight.bold),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 25.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text('PLATE NO: ' + report.platNo,
+                        style: TextStyle(
+                          color: Colors.black26,
+                          fontWeight: FontWeight.bold,
+                        )),
+                    SizedBox(
+                      height: 10,
                     ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Divider(
-                      color: Colors.black26,
+                    Text('Time: ' + report.createdAt,
+                        style: TextStyle(color: Colors.black26)),
+                    SizedBox(
+                      height: 10,
                     ),
-                  ),
-                ],
+                    Text('Details:',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 20),
+                      child: Text(
+                        report.message,
+                        maxLines: 3,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.black26),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Divider(
+                        color: Colors.black26,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             )
           ],

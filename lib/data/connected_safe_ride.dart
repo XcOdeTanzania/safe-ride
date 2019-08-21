@@ -106,7 +106,7 @@ mixin UtilityModel on ConnectedSafeRideModel {
 
   void setScreenShot({@required bool status}) {
     _showScreenShot = status;
-    print('object');
+
     notifyListeners();
   }
 
@@ -252,12 +252,11 @@ mixin LoginModel on ConnectedSafeRideModel {
           final graphResponse = await http.get(
               'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=$token');
           final profile = json.decode(graphResponse.body);
-          print('Email: ${profile['email']}');
+
           List<String> providers =
               await _auth.fetchSignInMethodsForEmail(email: profile['email']);
           String existingProvider = '';
           for (String provider in providers) {
-            print('provider : $provider');
             existingProvider = provider;
           }
           _message =
@@ -301,7 +300,6 @@ mixin LoginModel on ConnectedSafeRideModel {
     } on PlatformException catch (e) {
       switch (e.code) {
         case 'ERROR_EMAIL_ALREADY_IN_USE':
-          print('Email: $email');
           List<String> providers =
               await _auth.fetchSignInMethodsForEmail(email: email);
           for (String provider in providers) {
@@ -379,14 +377,18 @@ mixin StationModel on ConnectedSafeRideModel {
       final Map<String, dynamic> data = json.decode(response.body);
 
       if (data['status']) {
-        data['stations'].forEach((pieceData) {
-          final station = Station.fromMap(pieceData);
+        print('pooooooooooo');
+        print(data['stations']);
+        print('pooooooooooo*******************************************');
+        data['stations'].forEach((stationData) {
+          final station = Station.fromMap(stationData);
 
           _fetchedStations.add(station);
         });
         hasError = false;
       }
     } catch (error) {
+      print(error);
       hasError = true;
     }
     _availableStations = _fetchedStations;
@@ -419,8 +421,8 @@ mixin ReportModel on ConnectedSafeRideModel {
       final Map<String, dynamic> data = json.decode(response.body);
 
       if (data['status']) {
-        data['reports'].forEach((pieceData) {
-          final report = Report.fromMap(pieceData);
+        data['reports'].forEach((reportData) {
+          final report = Report.fromMap(reportData);
 
           _fetchedReports.add(report);
         });
@@ -440,14 +442,15 @@ mixin ReportModel on ConnectedSafeRideModel {
   Future<bool> postReport(
       {@required String message,
       @required String platNo,
-      @required int stationId}) async {
+      @required int stationId,
+      @required File file}) async {
     _isSubmitingReportData = true;
     bool hasError = false;
     notifyListeners();
 
     Dio dio = new Dio();
     FormData formdata = new FormData();
-    formdata.add("file", new UploadFileInfo(_pickedImage, "image.jpeg"));
+    formdata.add("file", new UploadFileInfo(file, "image.jpeg"));
     formdata.add("message", message);
     formdata.add("plat_no", platNo);
 
@@ -466,9 +469,10 @@ mixin ReportModel on ConnectedSafeRideModel {
         _onCreateReport(
             reportId: data['report']['id'],
             message: data['report']['message'],
-            platNo: data['report']['platNo'],
+            platNo: data['report']['plat_no'],
             image: data['report']['image'],
-            stationId: data['report']['station_id']);
+            stationId: data['report']['station_id'],
+            createdAt: data['report']['created_at']);
       } else {
         hasError = true;
       }
@@ -493,13 +497,15 @@ mixin ReportModel on ConnectedSafeRideModel {
     @required String platNo,
     @required int stationId,
     @required String image,
+    @required String createdAt,
   }) {
     final createdReport = Report(
         id: reportId,
         image: image,
         message: message,
         platNo: platNo,
-        stationId: stationId);
+        stationId: stationId,
+        createdAt: createdAt);
     _availableReports.add(createdReport);
 
     notifyListeners();

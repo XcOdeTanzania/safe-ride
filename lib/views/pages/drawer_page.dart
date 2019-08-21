@@ -6,7 +6,6 @@ import 'package:safe_ride/constants/constants.dart';
 import 'package:safe_ride/data/main.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-
 const String _kAsset0 = 'assets/icons/male.jpg';
 
 class DrawerPage extends StatefulWidget {
@@ -182,6 +181,23 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                                       Navigator.pop(context);
                                       Navigator.pushNamed(
                                           context, reportScreen);
+                                    },
+                                  ),
+                                  ListTile(
+                                    leading: const Icon(
+                                      FontAwesomeIcons.home,
+                                    ),
+                                    title: Text(
+                                      'Police Stations',
+                                      style: const TextStyle(
+                                        fontSize: 15.0,
+                                        fontFamily: 'mermaid',
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      Navigator.pushNamed(
+                                          context, stationScreen);
                                     },
                                   ),
                                   ListTile(

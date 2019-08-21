@@ -9,3 +9,5 @@ String accelerometerScreen = '/AccelerometerLogsScreen';
 String gyroscopeScreen = '/GyroscopeScreen';
 String notificationScreen = '/NotificationScreen';
 String reportScreen = '/ReportScreen';
+String stationScreen = '/StationScreen';
+String mapScreen = '/MapScreen';

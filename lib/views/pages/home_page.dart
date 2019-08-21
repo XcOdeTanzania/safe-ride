@@ -7,6 +7,7 @@ import 'package:safe_ride/models/accelerometer.dart';
 import 'package:safe_ride/models/gps_logs.dart';
 import 'package:safe_ride/models/gyroscope_logs.dart';
 import 'package:safe_ride/utils/enums.dart';
+import 'package:safe_ride/views/pages/create_report.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:sensors/sensors.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -142,6 +143,20 @@ class _HomePageState extends State<HomePage> {
                               child: Column(
                                 children: <Widget>[
                                   Expanded(
+                                    flex: 6,
+                                    child: _imageFile != null
+                                        ? Container(
+                                            decoration: BoxDecoration(
+                                                image: DecorationImage(
+                                              image: new AssetImage(
+                                                  'assets/img/map.png'),
+                                              fit: BoxFit.cover,
+                                            )),
+                                            child: Image.file(_imageFile),
+                                          )
+                                        : Container(),
+                                  ),
+                                  Expanded(
                                     flex: 1,
                                     child: Container(
                                       color: Colors.black12,
@@ -150,16 +165,28 @@ class _HomePageState extends State<HomePage> {
                                             CrossAxisAlignment.center,
                                         children: <Widget>[
                                           Expanded(
-                                            child: FlatButton(
-                                              color: Colors.red,
-                                              child: Text('Share',
+                                            child: FlatButton.icon(
+                                              icon: Icon(
+                                                Icons.warning,
+                                                color: Colors.red,
+                                              ),
+                                              color: Colors.white,
+                                              label: Text('REPORT',
                                                   style: TextStyle(
-                                                      color: Colors.white,
+                                                      color: Colors.red,
                                                       fontWeight:
                                                           FontWeight.bold)),
                                               onPressed: () {
-                                                model.setScreenShot(
-                                                    status: false);
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          CreateReportPage(
+                                                            imageFile:
+                                                                _imageFile,
+                                                          )),
+                                                );
+                                               
                                               },
                                             ),
                                           )
@@ -167,20 +194,6 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                     ),
                                   ),
-                                  Expanded(
-                                    flex: 6,
-                                    child: _imageFile != null
-                                        ? Container(
-                                            decoration: BoxDecoration(
-                                                image: DecorationImage(
-                                              image: new AssetImage(
-                                                  'assets/icons/car.png'),
-                                              fit: BoxFit.cover,
-                                            )),
-                                            child: Image.file(_imageFile),
-                                          )
-                                        : Container(),
-                                  )
                                 ],
                               )),
                         ),
@@ -288,7 +301,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _getLocation() async {
-    print('***********object***********');
     marker = Marker(
       markerId: markerId,
       icon: myIcon,
@@ -310,7 +322,6 @@ class _HomePageState extends State<HomePage> {
     var location = new Location();
 
     location.onLocationChanged().listen((LocationData currentLocation) {
-      print('object');
       GPSLogs _log = GPSLogs(
           altitude: currentLocation.altitude,
           latitude: currentLocation.latitude,

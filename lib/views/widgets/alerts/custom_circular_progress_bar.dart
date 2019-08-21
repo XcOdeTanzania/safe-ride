@@ -7,17 +7,13 @@ class CustomCircularProgressBar extends StatelessWidget {
       : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding:
-          EdgeInsets.only(top: MediaQuery.of(context).size.width / divider),
-      child: Center(
+    return Center(
           child: Container(
         child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.pink),
         ),
         height: 50,
         width: 50,
-      )),
-    );
+      ));
   }
 }

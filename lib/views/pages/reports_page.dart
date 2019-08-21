@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:safe_ride/data/main.dart';
+import 'package:safe_ride/views/widgets/alerts/custom_circular_progress_bar.dart';
 import 'package:safe_ride/views/widgets/alerts/no_data.dart';
 import 'package:safe_ride/styles/style.dart' as ThemeColor;
 import 'package:safe_ride/views/widgets/cards/report_card.dart';
@@ -16,7 +17,9 @@ class ReportsPage extends StatefulWidget {
 class _ReportsPageState extends State<ReportsPage> {
   @override
   void initState() {
-    widget.model.fetchReports();
+    widget.model.fetchReports().then((value) {
+      print('Am called');
+    });
     super.initState();
   }
 
@@ -28,20 +31,23 @@ class _ReportsPageState extends State<ReportsPage> {
         appBar: AppBar(
           title: Text('Reports'),
         ),
-        body: model.getReports().isEmpty
-            ? NoDataYet(
-                color: ThemeColor.Colors.saferidePrimaryColor,
-                icon: Icons.library_books,
-                title: 'No Reports recorded',
-              )
-            : ListView.builder(
-                itemBuilder: (BuildContext context, int index) {
-                  return ReportCard(
-                    onTap: () {},
-                    report: model.getReports()[index],
-                  );
-                },
-              ),
+        body: model.isFetchingReportData
+            ? CustomCircularProgressBar(divider: 2,)
+            : model.getReports().isEmpty
+                ? NoDataYet(
+                    color: ThemeColor.Colors.saferidePrimaryColor,
+                    icon: Icons.library_books,
+                    title: 'No Reports recorded',
+                  )
+                : ListView.builder(
+                  itemCount:model.getReports().length ,
+                    itemBuilder: (BuildContext context, int index) {
+                      return ReportCard(
+                        onTap: () {},
+                        report: model.getReports()[index],
+                      );
+                    },
+                  ),
       );
     });
   }
