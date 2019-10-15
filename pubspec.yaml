@@ -47,6 +47,7 @@ dependencies:
   google_sign_in: ^4.0.2
   location: ^2.3.5
   flutter_facebook_login: ^2.0.1
+  camera: ^0.5.5+1
 
  
 
@@ -72,6 +73,7 @@ flutter:
 
   assets:
      - assets/icons/logo.png
+     - assets/icons/accident.png
      - assets/icons/male.jpg
      - assets/icons/female.jpg
      - assets/audios/
@@ -79,6 +81,7 @@ flutter:
      - assets/icons/police-station.png
      - assets/img/default.jpg
      - assets/img/map.png
+     - assets/icons/
 
   
   # fonts:

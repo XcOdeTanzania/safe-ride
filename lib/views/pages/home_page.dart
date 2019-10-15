@@ -1,22 +1,16 @@
 import 'dart:async';
-import 'dart:io';
-import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
-import 'package:safe_ride/constants/constants.dart';
 import 'package:safe_ride/models/accelerometer.dart';
 import 'package:safe_ride/models/gps_logs.dart';
 import 'package:safe_ride/models/gyroscope_logs.dart';
 import 'package:safe_ride/utils/enums.dart';
-import 'package:safe_ride/views/pages/create_report.dart';
+import 'package:safe_ride/views/pages/reports/report_page.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:sensors/sensors.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:safe_ride/data/main.dart';
-
-import 'package:speedometer/speedometer.dart';
 import 'drawer_page.dart';
-import 'package:screenshot/screenshot.dart';
 import 'package:safe_ride/styles/style.dart' as ThemeColor;
 import 'package:location/location.dart';
 
@@ -31,16 +25,12 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
-  // StreamSubscription<Position> positionStream;
-  double _lowerValue = 80.0;
-  double _upperValue = 180.0;
-  int start = 0;
-  int end = 250;
 
-  int counter = 0;
   int intialSpeed = 0;
+  int _currentSpeed = 0;
+
   Color speedColor = ThemeColor.Colors.saferidePrimaryColor;
-  Color speedColorBackground = Colors.black38;
+  Color speedColorBackground = Colors.white;
   PublishSubject<double> eventObservable = new PublishSubject();
 
   Completer<GoogleMapController> _controller = Completer();
@@ -54,9 +44,6 @@ class _HomePageState extends State<HomePage> {
   FocusNode _speedFocusNode = FocusNode();
   TextEditingController _speedTextEditingController = TextEditingController();
 
-  File _imageFile;
-  //Create an instance of ScreenshotController
-  ScreenshotController screenshotController = ScreenshotController();
   @override
   void initState() {
     widget.model.fetchStations();
@@ -83,10 +70,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData speedometerTheme = new ThemeData(
-        primaryColor: Colors.blue,
-        accentColor: Colors.black,
-        backgroundColor: Colors.grey);
     // creating a new MARKER
     markers[markerId] = marker;
 
@@ -96,200 +79,89 @@ class _HomePageState extends State<HomePage> {
           key: _scaffoldKey,
           appBar: AppBar(
             title: Text('Safe Ride'),
-            actions: <Widget>[
-              BadgeIconButton(
-                  itemCount: 4,
-                  icon: Icon(Icons.notification_important),
-                  badgeColor: Colors.green,
-                  badgeTextColor: Colors.white,
-                  hideZeroCount: true,
-                  onPressed: () {
-                    showInSnackBar('Notification sms from next of kin');
-                    Navigator.pushNamed(context, notificationScreen);
-                  })
-            ],
           ),
-          body: Screenshot(
-            controller: screenshotController,
-            child: Stack(
-              children: <Widget>[
-                // Max Size
+          body: Stack(
+            children: <Widget>[
+              // Max Size
 
-                Container(
-                  child: GoogleMap(
-                    mapType: MapType.normal,
-                    initialCameraPosition: kGooglePlex,
-                    onMapCreated: (GoogleMapController controller) {
-                      _controller.complete(controller);
-                    },
-                    markers: Set<Marker>.of(markers.values),
-                  ),
+              Container(
+                child: GoogleMap(
+                  mapType: MapType.normal,
+                  initialCameraPosition: kGooglePlex,
+                  onMapCreated: (GoogleMapController controller) {
+                    _controller.complete(controller);
+                  },
+                  markers: Set<Marker>.of(markers.values),
                 ),
+              ),
 
-                model.showScreenShot
-                    ? Padding(
-                        padding: EdgeInsets.all(20),
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                    width: 4,
-                                    color:
-                                        ThemeColor.Colors.saferidePrimaryColor),
-                              ),
-                              height: 200,
-                              width: 150,
-                              child: Column(
-                                children: <Widget>[
-                                  Expanded(
-                                    flex: 6,
-                                    child: _imageFile != null
-                                        ? Container(
-                                            decoration: BoxDecoration(
-                                                image: DecorationImage(
-                                              image: new AssetImage(
-                                                  'assets/img/map.png'),
-                                              fit: BoxFit.cover,
-                                            )),
-                                            child: Image.file(_imageFile),
-                                          )
-                                        : Container(),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Container(
-                                      color: Colors.black12,
-                                      child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: <Widget>[
-                                          Expanded(
-                                            child: FlatButton.icon(
-                                              icon: Icon(
-                                                Icons.warning,
-                                                color: Colors.red,
-                                              ),
-                                              color: Colors.white,
-                                              label: Text('REPORT',
-                                                  style: TextStyle(
-                                                      color: Colors.red,
-                                                      fontWeight:
-                                                          FontWeight.bold)),
-                                              onPressed: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          CreateReportPage(
-                                                            imageFile:
-                                                                _imageFile,
-                                                          )),
-                                                );
-                                               
-                                              },
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              )),
+              Align(
+                alignment: Alignment.bottomLeft,
+                child: Container(
+                  padding: EdgeInsets.all(40),
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 10.0),
+                    child: InkWell(
+                      onTap: () => _showDialog(),
+                      child: Container(
+                        padding: const EdgeInsets.all(15.0),
+                        decoration: new BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.pink),
+                          color: Colors.white,
                         ),
-                      )
-                    : Container(),
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: Container(
-                    padding: EdgeInsets.all(40),
-                    child: SpeedOMeter(
-                        start: start,
-                        end: end,
-                        highlightStart: (_lowerValue / end),
-                        highlightEnd: (_upperValue / end),
-                        themeData: speedometerTheme,
-                        eventObservable: this.eventObservable),
-                    height: MediaQuery.of(context).size.width * 3 / 4,
-                    width: MediaQuery.of(context).size.width * 3 / 4,
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.bottomLeft,
-                  child: Container(
-                    padding: EdgeInsets.all(40),
-                    child: Padding(
-                      padding: EdgeInsets.only(top: 10.0),
-                      child: InkWell(
-                        onTap: () => _showDialog(),
-                        child: Container(
-                          padding: const EdgeInsets.all(15.0),
-                          decoration: new BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: speedColorBackground,
-                          ),
-                          child: Center(
-                              child: Stack(
-                            children: <Widget>[
-                              Align(
-                                alignment: Alignment.center,
-                                child: Text(intialSpeed.toString(),
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 40,
-                                        color: speedColor)),
-                              ),
-                              Align(
-                                  alignment: Alignment.bottomCenter,
-                                  child: Text("KMP",
-                                      style: TextStyle(color: speedColor),
-                                      overflow: TextOverflow.fade))
-                            ],
-                          )),
-                        ),
+                        child: Center(
+                            child: Stack(
+                          children: <Widget>[
+                            Align(
+                              alignment: Alignment.center,
+                              child: Text(_currentSpeed.toString(),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 40,
+                                      color: speedColor)),
+                            ),
+                            Align(
+                                alignment: Alignment.bottomCenter,
+                                child: Text("KMP",
+                                    style: TextStyle(color: speedColor),
+                                    overflow: TextOverflow.fade))
+                          ],
+                        )),
                       ),
                     ),
-                    height: MediaQuery.of(context).size.width / 2,
-                    width: MediaQuery.of(context).size.width / 2,
                   ),
+                  height: MediaQuery.of(context).size.width / 2,
+                  width: MediaQuery.of(context).size.width / 2,
                 ),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: Container(
-                    padding: EdgeInsets.all(40),
-                    child: Padding(
-                      padding: EdgeInsets.only(top: 10.0),
-                      child: InkWell(
-                        onTap: () {
-                          screenshotController.capture().then((File image) {
-                            setState(() {
-                              _imageFile = image;
-                            });
-
-                            showInSnackBar("Screenshot captured successfully");
-                            model.setScreenShot(status: true);
-                          }).catchError((onError) {});
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(15.0),
-                          decoration: new BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.black38,
-                          ),
-                          child: Icon(
-                            Icons.camera_enhance,
-                            size: 40,
-                            color: ThemeColor.Colors.saferidePrimaryColor,
-                          ),
+              ),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Container(
+                  padding: EdgeInsets.all(40),
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 10.0),
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (_) => ReportPage()));
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(15.0),
+                        decoration: new BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.pink),
+                          color: Colors.white,
                         ),
+                        child: Image.asset('assets/icons/accident.png'),
                       ),
                     ),
-                    height: MediaQuery.of(context).size.width / 2,
-                    width: MediaQuery.of(context).size.width / 2,
                   ),
-                )
-              ],
-            ),
+                  height: MediaQuery.of(context).size.width / 2,
+                  width: MediaQuery.of(context).size.width / 2,
+                ),
+              )
+            ],
           ),
           drawer: SizedBox(
             width: MediaQuery.of(context).size.width * 0.80,
@@ -330,6 +202,12 @@ class _HomePageState extends State<HomePage> {
 
       widget.model.addNewGPSLog(log: _log);
 
+      widget.model.postLocation(
+          x: currentLocation.latitude,
+          y: currentLocation.longitude,
+          z: currentLocation.speed * 3.6,
+          userId: 1);
+
       setState(() {
         marker = Marker(
           markerId: markerId,
@@ -354,18 +232,21 @@ class _HomePageState extends State<HomePage> {
 
         //speed color...
         if (intialSpeed > 0) {
+          _currentSpeed = (currentLocation.speed * 3.6).round();
           if (currentLocation.speed * 3.6 > intialSpeed) {
             // intialSpeed = int.parse(_speedTextEditingController.text);
             speedColor = Colors.white;
             speedColorBackground = Colors.red;
           } else if (currentLocation.speed * 3.6 - 10 > intialSpeed) {
             // intialSpeed = int.parse(_speedTextEditingController.text);
-            speedColor = Colors.white;
+            speedColor = Colors.green;
             speedColorBackground = Colors.white;
           } else {
-            speedColor = Colors.white;
-            speedColorBackground = Colors.green;
+            speedColor = Colors.green;
+            speedColorBackground = Colors.white;
           }
+        } else {
+          _currentSpeed = 0;
         }
       });
     });
@@ -377,6 +258,8 @@ class _HomePageState extends State<HomePage> {
           AccelerometerLogs(x: event.x, y: event.y, z: event.z);
 
       widget.model.addNewAccelerometerLog(log: _log);
+      widget.model
+          .postAcceletion(x: event.x, y: event.y, z: event.z, userId: 1);
     });
 
 //gyroscope
@@ -384,6 +267,7 @@ class _HomePageState extends State<HomePage> {
       GyroscopeLogs _log = GyroscopeLogs(x: event.x, y: event.y, z: event.z);
 
       widget.model.addNewGyroscopeLog(log: _log);
+      widget.model.postGyroscope(x: event.x, y: event.y, z: event.z, userId: 1);
     });
   }
 
@@ -458,7 +342,7 @@ class _HomePageState extends State<HomePage> {
                   if (_speedTextEditingController.text.isNotEmpty) {
                     setState(() {
                       intialSpeed = int.parse(_speedTextEditingController.text);
-                      speedColor = Colors.white;
+                      speedColor = Colors.green;
                       speedColorBackground = Colors.green;
                     });
 

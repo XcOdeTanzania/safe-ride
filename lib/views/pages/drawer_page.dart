@@ -149,24 +149,7 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                                           context, profileScreen);
                                     },
                                   ),
-                                  ListTile(
-                                    leading: const Icon(
-                                      Icons.notifications,
-                                    ),
-                                    title: Text(
-                                      'Messages',
-                                      style: const TextStyle(
-                                        fontSize: 15.0,
-                                        fontFamily: 'mermaid',
-                                      ),
-                                    ),
-                                    onTap: () {
-                                      Navigator.pop(context);
-                                      Navigator.pushNamed(
-                                          context, notificationScreen);
-                                    },
-                                  ),
-                                  ListTile(
+                               ListTile(
                                     leading: const Icon(
                                       Icons.library_books,
                                     ),

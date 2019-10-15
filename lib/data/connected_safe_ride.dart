@@ -48,7 +48,7 @@ mixin ConnectedSafeRideModel on Model {
 }
 mixin UtilityModel on ConnectedSafeRideModel {
   File file;
-  void chooseAmImage() async {
+  void selectImage() async {
     file = await ImagePicker.pickImage(source: ImageSource.gallery);
     _pickedImage = file;
     notifyListeners();
@@ -56,7 +56,7 @@ mixin UtilityModel on ConnectedSafeRideModel {
 
   //get the choosen Image.
 
-  File get pickedImage {
+  File get imageFile {
     return _pickedImage;
   }
 
@@ -517,5 +517,95 @@ mixin ReportModel on ConnectedSafeRideModel {
       return <Report>[];
     }
     return List<Report>.from(_availableReports);
+  }
+
+  //acceleration...
+  Future<bool> postAcceletion(
+      {@required double x,
+      @required double y,
+      @required double z,
+      @required int userId}) async {
+    final Map<String, dynamic> accelerationData = {
+      'x': x,
+      'y': y,
+      'z': z,
+      'user_id': userId,
+    };
+    final http.Response response = await http.post(
+      api + "acceleration",
+      body: json.encode(accelerationData),
+      headers: {'Content-Type': 'application/json'},
+    );
+    final Map<String, dynamic> data = json.decode(response.body);
+    bool hasError = true;
+
+    if (data.containsKey('status')) {
+      hasError = false;
+      print(hasError);
+    } else {
+      hasError = true;
+    }
+    notifyListeners();
+    return hasError;
+  }
+
+  //gyroscope...
+  Future<bool> postGyroscope(
+      {@required double x,
+      @required double y,
+      @required double z,
+      @required int userId}) async {
+    final Map<String, dynamic> gyroscopeData = {
+      'x': x,
+      'y': y,
+      'z': z,
+      'user_id': userId,
+    };
+    final http.Response response = await http.post(
+      api + "gyroscope",
+      body: json.encode(gyroscopeData),
+      headers: {'Content-Type': 'application/json'},
+    );
+    final Map<String, dynamic> data = json.decode(response.body);
+    bool hasError = true;
+
+    if (data.containsKey('status')) {
+      hasError = false;
+      print(hasError);
+    } else {
+      hasError = true;
+    }
+    notifyListeners();
+    return hasError;
+  }
+
+  //gyroscope...
+  Future<bool> postLocation(
+      {@required double x,
+      @required double y,
+      @required double z,
+      @required int userId}) async {
+    final Map<String, dynamic> gyroscopeData = {
+      'x': x,
+      'y': y,
+      'z': z,
+      'user_id': userId,
+    };
+    final http.Response response = await http.post(
+      api + "location",
+      body: json.encode(gyroscopeData),
+      headers: {'Content-Type': 'application/json'},
+    );
+    final Map<String, dynamic> data = json.decode(response.body);
+    bool hasError = true;
+
+    if (data.containsKey('status')) {
+      hasError = false;
+      print(hasError);
+    } else {
+      hasError = true;
+    }
+    notifyListeners();
+    return hasError;
   }
 }

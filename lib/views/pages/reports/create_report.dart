@@ -3,20 +3,18 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:safe_ride/data/main.dart';
+import 'package:safe_ride/views/pages/camera/camera_page.dart';
 import 'package:safe_ride/views/widgets/alerts/custom_circular_progress_bar.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class CreateReportPage extends StatelessWidget {
-  final File imageFile;
+  final String title;
   final FocusNode _commentFocusNode = FocusNode();
-  final FocusNode _platNoFocusNode = FocusNode();
 
   final TextEditingController _commentTextEditingController =
       TextEditingController();
-  final TextEditingController _platNoTextEditingController =
-      TextEditingController();
 
-  CreateReportPage({Key key, @required this.imageFile}) : super(key: key);
+  CreateReportPage({Key key, @required this.title}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant(
@@ -53,7 +51,60 @@ class CreateReportPage extends StatelessWidget {
                       image: new AssetImage('assets/img/map.png'),
                       fit: BoxFit.cover,
                     )),
-                    child: Image.file(imageFile),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          InkWell(
+                            onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => CameraPage())),
+                            child: Container(
+                              width: 100,
+                              height: 100,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: Theme.of(context).buttonColor)),
+                              child: Stack(
+                                children: <Widget>[
+                                  model.imageFile != null
+                                      ? Image(
+                                          width: 100,
+                                          height: 100,
+                                          image: FileImage(model.imageFile),
+                                          fit: BoxFit.cover,
+                                        )
+                                      : Container(),
+                                  Container(
+                                    width: 100,
+                                    height: 100,
+                                    color: Colors.black26,
+                                  ),
+                                  Align(
+                                    alignment: Alignment.center,
+                                    child: Icon(
+                                      Icons.camera_alt,
+                                      size: 50,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                          Center(
+                            child: Text(
+                              'Take A Photo',
+                              style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w100),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
                   ),
                 ),
                 SizedBox(
@@ -61,16 +112,17 @@ class CreateReportPage extends StatelessWidget {
                 ),
                 Padding(
                   padding: EdgeInsets.only(left: 20, right: 20),
-                  child: TextFormField(
-                    maxLength: 9,
-                    maxLines: 1,
-                    focusNode: _platNoFocusNode,
-                    controller: _platNoTextEditingController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                        hintText: 'Plate Number',
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5))),
+                  child: Row(
+                    children: <Widget>[
+                      Text(
+                        'ACCIDENT TYPE:\t',
+                        textAlign: TextAlign.start,
+                      ),
+                      Text(
+                        title,
+                        maxLines: 1,
+                      ),
+                    ],
                   ),
                 ),
                 SizedBox(
@@ -85,7 +137,7 @@ class CreateReportPage extends StatelessWidget {
                     controller: _commentTextEditingController,
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
-                        hintText: 'Message',
+                        hintText: 'Details',
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5))),
                   ),
@@ -95,7 +147,7 @@ class CreateReportPage extends StatelessWidget {
                   child: RaisedButton.icon(
                     color: Colors.pink,
                     label: Text(
-                      'Post Comment',
+                      'Post Report',
                       style: TextStyle(color: Colors.white),
                     ),
                     icon: Icon(
@@ -104,18 +156,17 @@ class CreateReportPage extends StatelessWidget {
                       size: 15,
                     ),
                     onPressed: () {
-                      if (_commentTextEditingController.text.isNotEmpty &&
-                          _platNoTextEditingController.text.isNotEmpty) {
+                      if (_commentTextEditingController.text.isNotEmpty) {
                         model
                             .postReport(
                                 message: _commentTextEditingController.text,
-                                platNo: _platNoTextEditingController.text,
+                                platNo: title,
                                 stationId: 8,
-                                file: imageFile)
+                                file: null)
                             .then((onValue) {
                           model.setScreenShot(status: false);
                           _commentTextEditingController.clear();
-                          _platNoTextEditingController.clear();
+
                           Navigator.pop(context);
                         });
                       } else {

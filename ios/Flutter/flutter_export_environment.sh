@@ -1,8 +1,8 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
 export "FLUTTER_ROOT=/Users/admin/development/flutter"
-export "FLUTTER_APPLICATION_PATH=/Volumes/Robbyn/flutter/clients/safe_ride"
-export "FLUTTER_TARGET=/Volumes/Robbyn/flutter/clients/safe_ride/lib/main.dart"
+export "FLUTTER_APPLICATION_PATH=/Volumes/Robbyn/qlicue/projects/flutter/clients/safe-ride"
+export "FLUTTER_TARGET=/Volumes/Robbyn/qlicue/projects/flutter/clients/safe-ride/lib/main.dart"
 export "FLUTTER_BUILD_DIR=build"
 export "SYMROOT=${SOURCE_ROOT}/../build/ios"
 export "FLUTTER_FRAMEWORK_DIR=/Users/admin/development/flutter/bin/cache/artifacts/engine/ios"
