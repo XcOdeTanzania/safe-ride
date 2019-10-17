@@ -50,8 +50,9 @@ dependencies:
   camera: ^0.5.5+1
   data_connection_checker: ^0.3.4
   share: ^0.6.2+4
+  audioplayers: ^0.13.2
 
- 
+
 
 dev_dependencies:
   flutter_test:
@@ -84,6 +85,8 @@ flutter:
      - assets/img/default.jpg
      - assets/img/map.png
      - assets/icons/
+     - assets/audios/
+
 
   
   # fonts:

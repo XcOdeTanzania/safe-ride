@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:io';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:safe_ride/models/accelerometer.dart';
 import 'package:safe_ride/models/gps_logs.dart';
@@ -6,6 +8,7 @@ import 'package:safe_ride/models/gyroscope_logs.dart';
 import 'package:safe_ride/utils/enums.dart';
 import 'package:safe_ride/views/pages/reports/report_page.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:screenshot/screenshot.dart';
 import 'package:sensors/sensors.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rxdart/rxdart.dart';
@@ -26,6 +29,8 @@ class _HomePageState extends State<HomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
 
+  final _formKeys = GlobalKey<FormState>();
+
   int intialSpeed = 0;
   int _currentSpeed = 0;
 
@@ -45,6 +50,14 @@ class _HomePageState extends State<HomePage> {
   TextEditingController _speedTextEditingController = TextEditingController();
 
   var isDeviceConnected = false;
+
+  ScreenshotController screenshotController = ScreenshotController();
+
+  final FocusNode _plateNoFocusNode = FocusNode();
+
+  TextEditingController _platNoTextEditingController = TextEditingController();
+
+  AudioPlayer audioPlayer = AudioPlayer();
 
   @override
   void initState() {
@@ -98,48 +111,56 @@ class _HomePageState extends State<HomePage> {
               ),
 
               Align(
-                alignment: Alignment.bottomLeft,
-                child: Container(
-                  padding: EdgeInsets.all(40),
-                  child: Padding(
-                    padding: EdgeInsets.only(top: 10.0),
-                    child: InkWell(
-                      onLongPress: () {
-                        _reportSpeed();
-                      },
-                      onTap: () => _showDialog(),
-                      child: Container(
-                        padding: const EdgeInsets.all(15.0),
-                        decoration: new BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.pink),
-                          color: Colors.white,
-                        ),
-                        child: Center(
-                            child: Stack(
-                          children: <Widget>[
-                            Align(
-                              alignment: Alignment.center,
-                              child: Text(_currentSpeed.toString(),
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 40,
-                                      color: speedColor)),
+                  alignment: Alignment.bottomLeft,
+                  child: Screenshot(
+                    controller: screenshotController,
+                    child: Container(
+                      padding: EdgeInsets.all(40),
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 10.0),
+                        child: InkWell(
+                          onLongPress: () {
+                            screenshotController.capture().then((File image) {
+                              setState(() {
+                                model.capturedImage = image;
+
+                                _reportSpeed(model);
+                              });
+                            }).catchError((onError) {});
+                          },
+                          onTap: () => _showDialog(),
+                          child: Container(
+                            padding: const EdgeInsets.all(15.0),
+                            decoration: new BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.pink),
+                              color: Colors.white,
                             ),
-                            Align(
-                                alignment: Alignment.bottomCenter,
-                                child: Text("KMP",
-                                    style: TextStyle(color: speedColor),
-                                    overflow: TextOverflow.fade))
-                          ],
-                        )),
+                            child: Center(
+                                child: Stack(
+                              children: <Widget>[
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: Text(_currentSpeed.toString(),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 40,
+                                          color: speedColor)),
+                                ),
+                                Align(
+                                    alignment: Alignment.bottomCenter,
+                                    child: Text("KMP",
+                                        style: TextStyle(color: speedColor),
+                                        overflow: TextOverflow.fade))
+                              ],
+                            )),
+                          ),
+                        ),
                       ),
+                      height: MediaQuery.of(context).size.width / 2,
+                      width: MediaQuery.of(context).size.width / 2,
                     ),
-                  ),
-                  height: MediaQuery.of(context).size.width / 2,
-                  width: MediaQuery.of(context).size.width / 2,
-                ),
-              ),
+                  )),
               Align(
                 alignment: Alignment.bottomRight,
                 child: Container(
@@ -239,19 +260,21 @@ class _HomePageState extends State<HomePage> {
         if (intialSpeed > 0) {
           _currentSpeed = (currentLocation.speed * 3.6).round();
           if (currentLocation.speed * 3.6 > intialSpeed) {
-            // intialSpeed = int.parse(_speedTextEditingController.text);
-            speedColor = Colors.white;
+            playBeep();
+            speedColor = Colors.red;
             speedColorBackground = Colors.red;
           } else if (currentLocation.speed * 3.6 - 10 > intialSpeed) {
-            // intialSpeed = int.parse(_speedTextEditingController.text);
+            stopBeep();
             speedColor = Colors.green;
             speedColorBackground = Colors.white;
           } else {
             speedColor = Colors.green;
             speedColorBackground = Colors.white;
+            stopBeep();
           }
         } else {
           _currentSpeed = 0;
+          stopBeep();
         }
       });
     });
@@ -446,70 +469,131 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _reportSpeed() {
+  void _reportSpeed(MainModel model) {
     showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Color(0xFFf43f5f),
+          backgroundColor: Colors.pinkAccent[300],
           title: Center(
               child: Text('Report Over Speeding',
                   style: TextStyle(
                       fontFamily: 'itikaf',
-                      color: Colors.white,
+                      color: Colors.pink,
                       fontWeight: FontWeight.bold))),
           content: SingleChildScrollView(
-              child: Column(
-            children: <Widget>[
-              Text(_currentSpeed.toString() + '\t KMP',
-                  style: TextStyle(
-                      fontFamily: 'itikaf',
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold)),
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.all(10),
-                      child: FlatButton(
-                        color: Colors.blue,
-                        child: Text('CANCEL',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold)),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          
-                        },
-                      ),
-                    ),
+              child: Form(
+            key: _formKeys,
+            child: Column(
+              children: <Widget>[
+                Divider(),
+                Container(
+                  child: Image.file(model.imageFile),
+                ),
+                Container(
+                  margin: EdgeInsets.only(left: 20, right: 20),
+                  child: TextFormField(
+                    validator: (val) {
+                      if (val.isEmpty) {
+                        return 'Enter Car Plate Number';
+                      }
+                      return null;
+                    },
+                    focusNode: _plateNoFocusNode,
+                    maxLength: 7,
+                    keyboardType: TextInputType.text,
+                    controller: _platNoTextEditingController,
+                    style: TextStyle(fontSize: 16.0, color: Colors.black),
+                    decoration: InputDecoration(
+                        //focusColor: Colors.pinkAccent,
+                        fillColor: Colors.pinkAccent,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5),
+                            borderSide: BorderSide(color: Colors.pinkAccent)),
+                        hintText: "PlatNo",
+                        labelText: "PlatNo",
+                        labelStyle: TextStyle(color: Colors.pinkAccent),
+                        hintStyle: TextStyle(
+                            fontFamily: "WorkSansSemiBold",
+                            fontSize: 17.0,
+                            color: Colors.pinkAccent),
+                        prefixIcon: Icon(
+                          Icons.shutter_speed,
+                          size: 22.0,
+                          color: Colors.pinkAccent,
+                        )),
                   ),
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.all(10),
-                      child: FlatButton(
-                        color: Colors.blue,
-                        child: Text('REPORT',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold)),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          widget.model.setUserType(type: UserType.passanger);
-                        },
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        child: FlatButton(
+                          color: Colors.blue,
+                          child: Text('CANCEL',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold)),
+                          onPressed: () {
+                            model.resetImage();
+                            Navigator.of(context).pop();
+                          },
+                        ),
                       ),
                     ),
-                  )
-                ],
-              )
-            ],
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        child: FlatButton(
+                          color: Colors.blue,
+                          child: Text('REPORT',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold)),
+                          onPressed: () {
+                            if (_formKeys.currentState.validate()) {
+                              model.postReport(
+                                  platNo: _platNoTextEditingController.text,
+                                  file: model.imageFile,
+                                  message: 'Over speeding',
+                                  reportId: 2,
+                                  stationId: 9,
+                                  uid: model.currentUser.uid);
+                              Navigator.of(context).pop();
+                            }
+                          },
+                        ),
+                      ),
+                    )
+                  ],
+                )
+              ],
+            ),
           )),
         );
       },
     );
+  }
+
+  playBeep() async {
+    int result =
+        await audioPlayer.play('assets/audios/beep.mp3', isLocal: true);
+    if (result == 1) {
+      // success
+      print('start');
+    }
+  }
+
+  stopBeep() async {
+    int result = await audioPlayer.stop();
+    if (result == 1) {
+      // success
+      print('stopped');
+    }
   }
 }

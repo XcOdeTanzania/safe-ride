@@ -27,8 +27,9 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    prepareCamera();
     WidgetsBinding.instance.addObserver(this);
+    prepareCamera();
+
     super.initState();
   }
 
@@ -68,7 +69,7 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                   ? IconButton(
                       icon: Icon(Icons.save),
                       onPressed: () {
-                        model.capturedImage = imagePath;
+                        model.capturedImage = File(imagePath);
                         Navigator.pop(context);
                       },
                     )
@@ -179,7 +180,11 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
     final List<Widget> toggles = <Widget>[];
 
     if (cameras.isEmpty) {
-      return Expanded(child: const Text('No camera found', textAlign: TextAlign.center,));
+      return Expanded(
+          child: const Text(
+        'No camera found',
+        textAlign: TextAlign.center,
+      ));
     } else {
       for (CameraDescription cameraDescription in cameras) {
         toggles.add(

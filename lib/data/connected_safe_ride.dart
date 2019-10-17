@@ -66,8 +66,8 @@ mixin UtilityModel on ConnectedSafeRideModel {
     return _pickedImage;
   }
 
-  set capturedImage(String imagePath) {
-    _pickedImage = File(imagePath);
+  set capturedImage(File imagePath) {
+    _pickedImage = imagePath;
     notifyListeners();
   }
 
@@ -474,7 +474,9 @@ mixin ReportModel on ConnectedSafeRideModel {
       {@required String message,
       @required String platNo,
       @required int stationId,
-      @required File file}) async {
+      @required File file,
+      @required int reportId,
+      @required String uid}) async {
     _isSubmitingReportData = true;
     bool hasError = false;
     notifyListeners();
@@ -484,6 +486,8 @@ mixin ReportModel on ConnectedSafeRideModel {
     formdata.add("file", new UploadFileInfo(file, "image.jpeg"));
     formdata.add("message", message);
     formdata.add("plat_no", platNo);
+    formdata.add("report_id", reportId);
+    formdata.add("uid", uid);
 
     dio
         .post(api + "report/" + stationId.toString(),
@@ -498,12 +502,14 @@ mixin ReportModel on ConnectedSafeRideModel {
       if (data['status']) {
         hasError = false;
         _onCreateReport(
-            reportId: data['report']['id'],
+            id: data['report']['id'],
             message: data['report']['message'],
             platNo: data['report']['plat_no'],
             image: data['report']['image'],
             stationId: data['report']['station_id'],
-            createdAt: data['report']['created_at']);
+            createdAt: data['report']['created_at'],
+            reportId: data['report']['report_id'],
+            uid: data['report']['uid']);
       } else {
         hasError = true;
       }
@@ -523,20 +529,24 @@ mixin ReportModel on ConnectedSafeRideModel {
   }
 
   void _onCreateReport({
-    @required int reportId,
+    @required int id,
     @required String message,
     @required String platNo,
     @required int stationId,
     @required String image,
+    @required int reportId,
+    @required String uid,
     @required String createdAt,
   }) {
     final createdReport = Report(
-        id: reportId,
+        id: id,
         image: image,
         message: message,
         platNo: platNo,
         stationId: stationId,
-        createdAt: createdAt);
+        createdAt: createdAt,
+        reportId: reportId,
+        uid: uid);
     _availableReports.add(createdReport);
 
     notifyListeners();
@@ -547,7 +557,8 @@ mixin ReportModel on ConnectedSafeRideModel {
     if (_availableReports == null) {
       return <Report>[];
     }
-    return List<Report>.from(_availableReports);
+    return List<Report>.from(
+        _availableReports.where((report) => report.uid == _currentUser.uid));
   }
 
   //acceleration...
@@ -666,4 +677,7 @@ mixin ReportModel on ConnectedSafeRideModel {
       print(DataConnectionChecker().lastTryResults);
     }
   }
+
+
+
 }

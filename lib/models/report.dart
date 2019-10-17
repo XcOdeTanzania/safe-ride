@@ -6,6 +6,8 @@ class Report {
   final String platNo;
   final String message;
   final int stationId;
+  final int reportId;
+  final String uid;
   final String createdAt;
 
   Report(
@@ -14,6 +16,8 @@ class Report {
       @required this.platNo,
       @required this.message,
       @required this.stationId,
+      @required this.reportId,
+      @required this.uid,
       @required this.createdAt});
 
   Report.fromMap(Map<String, dynamic> map)
@@ -22,5 +26,7 @@ class Report {
         platNo = map['plat_no'],
         message = map['message'],
         createdAt = map['created_at'],
-        stationId = map['station_id'];
+        stationId = map['station_id'],
+        reportId = map['report_id'],
+        uid = map['uid'];
 }

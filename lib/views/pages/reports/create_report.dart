@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:safe_ride/data/main.dart';
@@ -156,13 +154,16 @@ class CreateReportPage extends StatelessWidget {
                       size: 15,
                     ),
                     onPressed: () {
-                      if (_commentTextEditingController.text.isNotEmpty) {
+                      if (_commentTextEditingController.text.isNotEmpty &&
+                          model.imageFile != null) {
                         model
                             .postReport(
                                 message: _commentTextEditingController.text,
                                 platNo: title,
                                 stationId: 8,
-                                file: null)
+                                file: model.imageFile,
+                                reportId: 1,
+                                uid: model.currentUser.uid)
                             .then((onValue) {
                           model.setScreenShot(status: false);
                           _commentTextEditingController.clear();
