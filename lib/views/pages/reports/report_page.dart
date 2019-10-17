@@ -15,7 +15,7 @@ class ReportPage extends StatelessWidget {
         child: Column(
           children: <Widget>[
             SizedBox(
-              height: 40,
+              height: 20,
             ),
             Row(
               children: <Widget>[
@@ -23,7 +23,7 @@ class ReportPage extends StatelessWidget {
                   child: Text(
                     'Choose Accident Type',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                   ),
                 )
               ],
@@ -65,7 +65,7 @@ class ReportPage extends StatelessWidget {
                 Expanded(
                     child: CustomButton(
                   image: 'assets/icons/accident-three.png',
-                  title: 'Moto/Person',
+                  title: 'Vehicle/Animal',
                   onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -89,16 +89,23 @@ class ReportPage extends StatelessWidget {
             SizedBox(
               height: 40,
             ),
+            Divider(
+              endIndent: 10,
+              indent: 10,
+            ),
+            SizedBox(
+              height: 40,
+            ),
             Row(
               children: <Widget>[
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(left: 20),
                     child: Text(
-                      'Contacts',
+                      'Police Emergency Contacts',
                       textAlign: TextAlign.start,
                       style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                          TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
                     ),
                   ),
                 )

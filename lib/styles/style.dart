@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class Colors {
   const Colors();
 
-  static const Color loginGradientStart = const Color(0xFFbab66);
+  static const Color loginGradientStart = const Color(0xFFfabebe);
   static const Color loginGradientEnd = const Color(0xFFf43f5f);
   static const Color loginButtonMix = const Color(0xFFeb66f30);
   static const Color saferidePrimaryColor = const Color(0xFFf43f5f);

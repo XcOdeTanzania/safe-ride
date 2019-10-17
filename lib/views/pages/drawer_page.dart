@@ -149,12 +149,12 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                                           context, profileScreen);
                                     },
                                   ),
-                               ListTile(
+                                  ListTile(
                                     leading: const Icon(
                                       Icons.library_books,
                                     ),
                                     title: Text(
-                                      'Reports',
+                                      'Sent Reports',
                                       style: const TextStyle(
                                         fontSize: 15.0,
                                         fontFamily: 'mermaid',
@@ -171,7 +171,7 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                                       FontAwesomeIcons.home,
                                     ),
                                     title: Text(
-                                      'Police Stations',
+                                      'Nearby Police Stations',
                                       style: const TextStyle(
                                         fontSize: 15.0,
                                         fontFamily: 'mermaid',
@@ -188,7 +188,7 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                                       Icons.graphic_eq,
                                     ),
                                     title: Text(
-                                      'Insights',
+                                      'Data Insights',
                                       style: const TextStyle(
                                         fontSize: 15.0,
                                         fontFamily: 'mermaid',
@@ -205,7 +205,24 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                                       Icons.data_usage,
                                     ),
                                     title: Text(
-                                      'Logs',
+                                      'Data Logs',
+                                      style: const TextStyle(
+                                        fontSize: 15.0,
+                                        fontFamily: 'mermaid',
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                      Navigator.pushNamed(context, logsScreen);
+                                    },
+                                  ),
+                                 
+                                  ListTile(
+                                    leading: const Icon(
+                                      Icons.share,
+                                    ),
+                                    title: Text(
+                                      'Share Route',
                                       style: const TextStyle(
                                         fontSize: 15.0,
                                         fontFamily: 'mermaid',

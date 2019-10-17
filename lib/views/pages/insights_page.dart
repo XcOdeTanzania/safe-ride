@@ -115,7 +115,7 @@ class _InsightsPageState extends State<InsightsPage> {
     Widget content = _buildTabletLayout();
     return Scaffold(
         appBar: AppBar(
-          title: Text('Isights'),
+          title: Text('Data Insights'),
         ),
         body: Center(child: content));
   }
