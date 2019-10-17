@@ -66,6 +66,11 @@ mixin UtilityModel on ConnectedSafeRideModel {
     return _pickedImage;
   }
 
+  set capturedImage(String imagePath) {
+    _pickedImage = File(imagePath);
+    notifyListeners();
+  }
+
   String get nextOfKin => _nextOfKin;
 
   bool get isNextOfKinEditing => _isNextOfKinEditing;
