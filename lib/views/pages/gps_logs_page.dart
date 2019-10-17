@@ -12,6 +12,17 @@ class GPSLogsPage extends StatelessWidget {
         return Scaffold(
             appBar: AppBar(
               title: Text('GPS Logs'),
+              actions: <Widget>[
+                model.getGPSLogs().length > 0
+                    ? IconButton(
+                        icon: Icon(Icons.sync),
+                        tooltip: 'Sync',
+                        onPressed: () {
+                          model.sycLocallySavedData();
+                        },
+                      )
+                    : Container()
+              ],
               bottom: PreferredSize(
                 preferredSize: const Size.fromHeight(48.0),
                 child: Theme(
@@ -76,7 +87,7 @@ class GPSLogsPage extends StatelessWidget {
                 ),
               ),
             ),
-            body: model.getAccelerometerLogs().length > 0
+            body: model.getGPSLogs().length > 0
                 ? ListView.builder(
                     itemBuilder: (BuildContext context, int index) {
                       return Row(

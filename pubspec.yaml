@@ -48,6 +48,8 @@ dependencies:
   location: ^2.3.5
   flutter_facebook_login: ^2.0.1
   camera: ^0.5.5+1
+  data_connection_checker: ^0.3.4
+  share: ^0.6.2+4
 
  
 

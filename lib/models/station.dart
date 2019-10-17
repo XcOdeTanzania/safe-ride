@@ -27,8 +27,12 @@ class Station {
       : id = map['id'],
         name = map['name'],
         idStation = map['id_station'],
-        latitude = map['latitude'] == 0 ? 0.00000000000000 : map['latitude'],
-        longitude = map['longitude'] == 0 ? 0.0000000000000 : map['longitude'],
+        latitude = map['latitude'] == 0
+            ? 0.00000000000000
+            : double.parse(map['latitude'].toString()),
+        longitude = map['longitude'] == 0
+            ? 0.0000000000000
+            : double.parse(map['longitude'].toString()),
         district = map['district'],
         idDistrict = map['id_district'],
         region = map['region'],

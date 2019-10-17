@@ -230,7 +230,7 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                                     ),
                                     onTap: () {
                                       Navigator.pop(context);
-                                      Navigator.pushNamed(context, logsScreen);
+                                      Navigator.pushNamed(context, shareRouteScreen);
                                     },
                                   ),
                                   Divider(),

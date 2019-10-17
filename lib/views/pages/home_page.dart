@@ -44,6 +44,8 @@ class _HomePageState extends State<HomePage> {
   FocusNode _speedFocusNode = FocusNode();
   TextEditingController _speedTextEditingController = TextEditingController();
 
+  var isDeviceConnected = false;
+
   @override
   void initState() {
     widget.model.fetchStations();
@@ -102,6 +104,9 @@ class _HomePageState extends State<HomePage> {
                   child: Padding(
                     padding: EdgeInsets.only(top: 10.0),
                     child: InkWell(
+                      onLongPress: () {
+                        _reportSpeed();
+                      },
                       onTap: () => _showDialog(),
                       child: Container(
                         padding: const EdgeInsets.all(15.0),
@@ -422,6 +427,73 @@ class _HomePageState extends State<HomePage> {
                       child: FlatButton(
                         color: Colors.blue,
                         child: Text('PASSANGER',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold)),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          widget.model.setUserType(type: UserType.passanger);
+                        },
+                      ),
+                    ),
+                  )
+                ],
+              )
+            ],
+          )),
+        );
+      },
+    );
+  }
+
+  void _reportSpeed() {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Color(0xFFf43f5f),
+          title: Center(
+              child: Text('Report Over Speeding',
+                  style: TextStyle(
+                      fontFamily: 'itikaf',
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold))),
+          content: SingleChildScrollView(
+              child: Column(
+            children: <Widget>[
+              Text(_currentSpeed.toString() + '\t KMP',
+                  style: TextStyle(
+                      fontFamily: 'itikaf',
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold)),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      child: FlatButton(
+                        color: Colors.blue,
+                        child: Text('CANCEL',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold)),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          
+                        },
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      child: FlatButton(
+                        color: Colors.blue,
+                        child: Text('REPORT',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold)),

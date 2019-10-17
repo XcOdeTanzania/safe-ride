@@ -11,6 +11,7 @@ import 'package:safe_ride/views/pages/logs_page.dart';
 import 'package:safe_ride/views/pages/police_stations_page.dart';
 import 'package:safe_ride/views/pages/profile_page.dart';
 import 'package:safe_ride/views/pages/reports_page.dart';
+import 'package:safe_ride/views/pages/share_route.dart';
 import 'package:safe_ride/views/screens/AnimatedSplashScreen.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -30,6 +31,7 @@ class _AppState extends State<App> {
   @override
   void initState() {
     _model.autoAuthenticate();
+    _model.loadNextOfKin();
     _model.userSubject.listen((bool isAuthenticated) {
       setState(() {
         _isAuthenticated = isAuthenticated;
@@ -55,6 +57,7 @@ class _AppState extends State<App> {
           profileScreen: (BuildContext context) => ProfileScreen(),
           insightsScreen: (BuildContext context) => InsightsPage(),
           logsScreen: (BuildContext context) => LogsPage(),
+          shareRouteScreen: (BuildContext context) => ShareRoute(),
           gpsScreen: (BuildContext context) => GPSLogsPage(),
           accelerometerScreen: (BuildContext context) =>
               AccelerometerLogsPage(),
@@ -66,7 +69,6 @@ class _AppState extends State<App> {
           stationScreen: (BuildContext context) => PoliceStationPage(
                 model: _model,
               ),
-          
         },
       ),
       model: _model,

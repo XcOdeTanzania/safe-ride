@@ -4,6 +4,7 @@ String orderScreen = '/OrderScreen';
 String profileScreen = '/ProfileScreen';
 String insightsScreen = '/InsightsScreen';
 String logsScreen = '/LogsScreen';
+String shareRouteScreen = '/shareRouteScreen';
 String gpsScreen = '/GPSScreen';
 String accelerometerScreen = '/AccelerometerLogsScreen';
 String gyroscopeScreen = '/GyroscopeScreen';

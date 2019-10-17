@@ -13,6 +13,17 @@ class AccelerometerLogsPage extends StatelessWidget {
         return Scaffold(
             appBar: AppBar(
               title: Text('Accelerometer Logs'),
+              actions: <Widget>[
+                model.getAccelerometerLogs().length > 0
+                    ? IconButton(
+                        icon: Icon(Icons.sync),
+                        tooltip: 'Sync',
+                        onPressed: () {
+                          model.sycLocallySavedData();
+                        },
+                      )
+                    : Container()
+              ],
               bottom: PreferredSize(
                 preferredSize: const Size.fromHeight(48.0),
                 child: Theme(

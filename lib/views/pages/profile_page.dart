@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:safe_ride/data/main.dart';
 import 'package:safe_ride/utils/enums.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -15,6 +16,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final double _appBarHeight = 256.0;
   static final GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>();
+
+  final FocusNode _phoneFocusNode = FocusNode();
+  TextEditingController _phoneTextEditingController = TextEditingController();
 
   AppBarBehavior _appBarBehavior = AppBarBehavior.pinned;
 
@@ -87,10 +91,90 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 20.0, top: 10),
+                              child: Text(
+                                'Next Of Kin',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                            model.nextOfKin != null && !model.isNextOfKinEditing
+                                ? Row(
+                                    children: <Widget>[
+                                      Expanded(
+                                        child: ListTile(
+                                          title: Text(model.nextOfKin),
+                                          trailing: IconButton(
+                                            color: Colors.pinkAccent,
+                                            icon: Icon(Icons.edit),
+                                            tooltip: 'Edit',
+                                            onPressed: () {
+                                              model.toggleIsEditing = true;
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : Container(
+                                    margin: EdgeInsets.all(20),
+                                    child: TextField(
+                                      maxLength: 13,
+                                      focusNode: _phoneFocusNode,
+                                      keyboardType: TextInputType.phone,
+                                      controller: _phoneTextEditingController,
+                                      style: TextStyle(
+                                          fontSize: 16.0, color: Colors.black),
+                                      decoration: InputDecoration(
+                                          //focusColor: Colors.white,
+                                          fillColor: Colors.white,
+                                          border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(30),
+                                              borderSide: BorderSide(
+                                                  color: Colors.white)),
+                                          hintText: "Phone",
+                                          labelText: "Phone",
+                                          labelStyle: TextStyle(
+                                              color: Colors.pinkAccent),
+                                          hintStyle: TextStyle(
+                                              fontFamily: "WorkSansSemiBold",
+                                              fontSize: 17.0,
+                                              color: Colors.pinkAccent),
+                                          prefixIcon: Icon(
+                                            Icons.phone,
+                                            size: 22.0,
+                                            color: Colors.pinkAccent,
+                                          )),
+                                    ),
+                                  ),
                             Row(
                               children: <Widget>[
                                 Expanded(
-                                  child: ListTile(title: Text('NO DATA YET'),),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: model.nextOfKin != null &&
+                                            !model.isNextOfKinEditing
+                                        ? Container()
+                                        : RaisedButton(
+                                            color: Colors.pinkAccent,
+                                            textColor: Colors.white,
+                                            onPressed: () {
+                                              if (_phoneTextEditingController
+                                                  .text.isNotEmpty) {
+                                                model.addNextOfKin(
+                                                    nextOfKin:
+                                                        _phoneTextEditingController
+                                                            .text);
+
+                                                model.toggleIsEditing = false;
+                                              }
+                                            },
+                                            child: Text('Save'),
+                                          ),
+                                  ),
                                 ),
                               ],
                             ),

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,6 +21,8 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:shared_preferences/shared_preferences.dart';
 
 mixin ConnectedSafeRideModel on Model {
   //fire base current user..
@@ -47,6 +50,9 @@ mixin ConnectedSafeRideModel on Model {
   bool _isSubmitingReportData = false;
 }
 mixin UtilityModel on ConnectedSafeRideModel {
+  String _nextOfKin;
+  bool _isNextOfKinEditing = false;
+
   File file;
   void selectImage() async {
     file = await ImagePicker.pickImage(source: ImageSource.gallery);
@@ -58,6 +64,29 @@ mixin UtilityModel on ConnectedSafeRideModel {
 
   File get imageFile {
     return _pickedImage;
+  }
+
+  String get nextOfKin => _nextOfKin;
+
+  bool get isNextOfKinEditing => _isNextOfKinEditing;
+
+  set toggleIsEditing(bool value) {
+    _isNextOfKinEditing = value;
+    notifyListeners();
+  }
+
+  ///load the next of kin
+  loadNextOfKin() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _nextOfKin = prefs.getString('nextOfKin');
+  }
+
+  ///add your next of kin
+  addNextOfKin({@required nextOfKin}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('nextOfKin', nextOfKin);
+    _nextOfKin = nextOfKin;
+    notifyListeners();
   }
 
   List<GPSLogs> getGPSLogs() {
@@ -377,9 +406,6 @@ mixin StationModel on ConnectedSafeRideModel {
       final Map<String, dynamic> data = json.decode(response.body);
 
       if (data['status']) {
-        print('pooooooooooo');
-        print(data['stations']);
-        print('pooooooooooo*******************************************');
         data['stations'].forEach((stationData) {
           final station = Station.fromMap(stationData);
 
@@ -607,5 +633,32 @@ mixin ReportModel on ConnectedSafeRideModel {
     }
     notifyListeners();
     return hasError;
+  }
+
+  sycLocallySavedData() async {
+    bool result = await DataConnectionChecker().hasConnection;
+    if (result == true) {
+      print('YAY! Free cute dog pics!');
+      _availableGPSLogs.forEach((location) => postLocation(
+          x: location.latitude,
+          y: location.latitude,
+          z: location.speed,
+          userId: 1));
+
+      _availableAccelerometerLogs.forEach((acceleration) => postAcceletion(
+          x: acceleration.x, y: acceleration.y, z: acceleration.z, userId: 1));
+
+      _availableGyroscopeLogs.forEach((gyroscope) => postGyroscope(
+          x: gyroscope.x, y: gyroscope.y, z: gyroscope.z, userId: 1));
+
+      //empty the lists..
+      _availableGPSLogs = [];
+      _availableAccelerometerLogs = [];
+      _availableGyroscopeLogs = [];
+      notifyListeners();
+    } else {
+      print('No internet :( Reason:');
+      print(DataConnectionChecker().lastTryResults);
+    }
   }
 }

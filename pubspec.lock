@@ -106,6 +106,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.2"
+  data_connection_checker:
+    dependency: "direct main"
+    description:
+      name: data_connection_checker
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.4"
   dio:
     dependency: "direct main"
     description:
@@ -319,6 +326,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.0+1"
+  share:
+    dependency: "direct main"
+    description:
+      name: share
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.6.2+4"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -417,4 +431,4 @@ packages:
     version: "2.1.16"
 sdks:
   dart: ">=2.4.0 <3.0.0"
-  flutter: ">=1.5.0 <2.0.0"
+  flutter: ">=1.6.0 <2.0.0"
