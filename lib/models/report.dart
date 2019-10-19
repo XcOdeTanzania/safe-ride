@@ -23,10 +23,10 @@ class Report {
   Report.fromMap(Map<String, dynamic> map)
       : id = map['id'],
         image = map['image'],
-        platNo = map['plat_no'],
-        message = map['message'],
+        platNo = map['plat_no'].toString(),
+        message = map['message'].toString(),
         createdAt = map['created_at'],
         stationId = map['station_id'],
         reportId = map['report_id'],
-        uid = map['uid'];
+        uid = map['uid'].toString();
 }

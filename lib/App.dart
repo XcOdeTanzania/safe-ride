@@ -30,6 +30,7 @@ class _AppState extends State<App> {
 
   @override
   void initState() {
+    _model.fetchReports();
     _model.autoAuthenticate();
     _model.loadNextOfKin();
     _model.userSubject.listen((bool isAuthenticated) {

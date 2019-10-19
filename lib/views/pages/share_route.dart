@@ -151,7 +151,8 @@ class _ShareRouteState extends State<ShareRoute> {
                               Share.share('From: ' +
                                   _fromTextEditingController.text +
                                   '\t To: ' +
-                                  _toTextEditingController.text);
+                                  _toTextEditingController.text +
+                                  'https://www.google.com/maps/search/?api=1&query=${_latitude},${_longitude}');
                             } else {
                               showInSnackBar(
                                   'Add a next of kin to share your routes with');

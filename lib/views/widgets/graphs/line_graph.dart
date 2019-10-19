@@ -10,6 +10,7 @@ class LineGraph extends StatelessWidget {
   final String graphSubtitle;
   final String graphTag;
   final String moreInfo;
+  final List<TimeSeriesSales> data;
 
   const LineGraph(
       {Key key,
@@ -17,17 +18,11 @@ class LineGraph extends StatelessWidget {
       @required this.graphTitle,
       @required this.graphSubtitle,
       @required this.graphTag,
-      @required this.moreInfo})
+      @required this.moreInfo,
+      @required this.data})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
-    var data = [
-      new TimeSeriesSales(new DateTime(2017, 9, 19), 5),
-      new TimeSeriesSales(new DateTime(2017, 9, 26), 25),
-      new TimeSeriesSales(new DateTime(2017, 10, 3), 100),
-      new TimeSeriesSales(new DateTime(2017, 10, 10), 75),
-    ];
-
     var series = [
       charts.Series<TimeSeriesSales, DateTime>(
         id: 'Sales',
@@ -43,11 +38,11 @@ class LineGraph extends StatelessWidget {
       behaviors: [
         charts.RangeAnnotation([
           charts.LineAnnotationSegment(
-              DateTime(2017, 10, 4), charts.RangeAnnotationAxisType.domain,
-              startLabel: 'Oct 4'),
+              DateTime(2019, 10, 4), charts.RangeAnnotationAxisType.domain,
+              startLabel: '04 Oct'),
           charts.LineAnnotationSegment(
-              DateTime(2017, 10, 15), charts.RangeAnnotationAxisType.domain,
-              endLabel: 'Oct 15'),
+              DateTime(2019, 10, 15), charts.RangeAnnotationAxisType.domain,
+              endLabel: '17 Oct'),
         ])
       ],
     );

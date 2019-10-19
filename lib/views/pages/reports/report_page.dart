@@ -126,7 +126,7 @@ class ReportPage extends StatelessWidget {
                         'Call Now',
                         style: TextStyle(color: Colors.white),
                       ),
-                      onPressed: () => _launchURL(url: 'tel:+255 715 785 672'),
+                      onPressed: () => _launchURL(url: 'tel:+255 654 940 138'),
                     ),
                   )
                 ],

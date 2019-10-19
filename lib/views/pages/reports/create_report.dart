@@ -5,19 +5,29 @@ import 'package:safe_ride/views/pages/camera/camera_page.dart';
 import 'package:safe_ride/views/widgets/alerts/custom_circular_progress_bar.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-class CreateReportPage extends StatelessWidget {
+class CreateReportPage extends StatefulWidget {
   final String title;
+
+  CreateReportPage({Key key, @required this.title}) : super(key: key);
+
+  @override
+  _CreateReportPageState createState() => _CreateReportPageState();
+}
+
+class _CreateReportPageState extends State<CreateReportPage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   final FocusNode _commentFocusNode = FocusNode();
 
   final TextEditingController _commentTextEditingController =
       TextEditingController();
 
-  CreateReportPage({Key key, @required this.title}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant(
         builder: (BuildContext context, Widget child, MainModel model) {
       return Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           title: Text('Create Report'),
           actions: <Widget>[
@@ -117,7 +127,7 @@ class CreateReportPage extends StatelessWidget {
                         textAlign: TextAlign.start,
                       ),
                       Text(
-                        title,
+                        widget.title,
                         maxLines: 1,
                       ),
                     ],
@@ -159,16 +169,21 @@ class CreateReportPage extends StatelessWidget {
                         model
                             .postReport(
                                 message: _commentTextEditingController.text,
-                                platNo: title,
+                                platNo: widget.title,
                                 stationId: 8,
                                 file: model.imageFile,
                                 reportId: 1,
                                 uid: model.currentUser.uid)
                             .then((onValue) {
-                          model.setScreenShot(status: false);
-                          _commentTextEditingController.clear();
-
-                          Navigator.pop(context);
+                          if (!onValue) {
+                            model.setScreenShot(status: false);
+                            _commentTextEditingController.clear();
+                            _showInSnackBar(
+                                'Report sent successfully', Colors.green);
+                            Navigator.pop(context);
+                          } else {
+                            _showInSnackBar('No internet connect', Colors.red);
+                          }
                         });
                       } else {
                         print('Error');
@@ -190,5 +205,22 @@ class CreateReportPage extends StatelessWidget {
         )),
       );
     });
+  }
+
+  void _showInSnackBar(String value, Color color) {
+    FocusScope.of(context).requestFocus(new FocusNode());
+    _scaffoldKey.currentState?.removeCurrentSnackBar();
+    _scaffoldKey.currentState.showSnackBar(new SnackBar(
+      content: new Text(
+        value,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            color: Colors.white,
+            fontSize: 16.0,
+            fontFamily: "WorkSansSemiBold"),
+      ),
+      backgroundColor: color,
+      duration: Duration(seconds: 3),
+    ));
   }
 }

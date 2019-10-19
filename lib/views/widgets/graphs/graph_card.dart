@@ -26,7 +26,6 @@ class GrapCard extends StatelessWidget {
       child: Card(
         margin: EdgeInsets.all(10),
         child: Column(
-        
           children: <Widget>[
             ListTile(
               title: Text(graphTitle),
@@ -71,6 +70,51 @@ class GrapCard extends StatelessWidget {
                     ),
                   )
                 : Container(),
+            sender == "bar"
+                ? Row(
+                    children: <Widget>[
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Container(
+                        height: 10,
+                        width: 10,
+                        color: Colors.red,
+                      ),
+                      Text('\tOver Speeding')
+                    ],
+                  )
+                : Container(),
+            sender == "bar"
+                ? Row(
+                    children: <Widget>[
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Container(
+                        height: 10,
+                        width: 10,
+                        color: Colors.blue,
+                      ),
+                      Text('\tNormal Speed')
+                    ],
+                  )
+                : Container(),
+            sender == "bar"
+                ? Row(
+                    children: <Widget>[
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Container(
+                        height: 10,
+                        width: 10,
+                        color: Colors.black26,
+                      ),
+                      Text('\tLow Speeding')
+                    ],
+                  )
+                : Container()
           ],
         ),
       ),

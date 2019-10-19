@@ -469,6 +469,26 @@ mixin ReportModel on ConnectedSafeRideModel {
     return hasError;
   }
 
+  Future<bool> deleteReport({@required int reportId}) async {
+    bool hasError = true;
+    try {
+      final http.Response response =
+          await http.delete(api + "report/" + reportId.toString());
+
+      final Map<String, dynamic> data = json.decode(response.body);
+
+      if (data['status']) {
+        hasError = false;
+        _availableReports.removeWhere((report) => report.id == reportId);
+        notifyListeners();
+      }
+    } catch (error) {
+      hasError = true;
+    }
+
+    return hasError;
+  }
+
   // post  Report.
   Future<bool> postReport(
       {@required String message,
@@ -488,6 +508,7 @@ mixin ReportModel on ConnectedSafeRideModel {
     formdata.add("plat_no", platNo);
     formdata.add("report_id", reportId);
     formdata.add("uid", uid);
+    formdata.add("user_type", _userType.toString().replaceAll('UserType.', ''));
 
     dio
         .post(api + "report/" + stationId.toString(),
@@ -498,8 +519,9 @@ mixin ReportModel on ConnectedSafeRideModel {
                 ))
         .then((response) {
       final Map<String, dynamic> data = response.data;
-
-      if (data['status']) {
+      print(data);
+      if (response.statusCode == 200) {
+        print('------------------------------------------');
         hasError = false;
         _onCreateReport(
             id: data['report']['id'],
@@ -548,17 +570,21 @@ mixin ReportModel on ConnectedSafeRideModel {
         reportId: reportId,
         uid: uid);
     _availableReports.add(createdReport);
-
+    print('Am called tooo');
     notifyListeners();
   }
 
   //getters
   List<Report> getReports() {
+    print('-----------');
+    print(_availableReports);
+    print(_currentUser.uid);
+    print('++++++++++++');
     if (_availableReports == null) {
       return <Report>[];
     }
-    return List<Report>.from(
-        _availableReports.where((report) => report.uid == _currentUser.uid));
+    return List<Report>.from(_availableReports
+        .where((report) => report.uid == _currentUser.uid.toString()));
   }
 
   //acceleration...
@@ -571,7 +597,8 @@ mixin ReportModel on ConnectedSafeRideModel {
       'x': x,
       'y': y,
       'z': z,
-      'user_id': userId,
+      'uid': _currentUser.uid,
+      'user_type': _userType.toString().replaceAll('UserType.', '')
     };
     final http.Response response = await http.post(
       api + "acceleration",
@@ -601,7 +628,8 @@ mixin ReportModel on ConnectedSafeRideModel {
       'x': x,
       'y': y,
       'z': z,
-      'user_id': userId,
+      'uid': _currentUser.uid,
+      'user_type': _userType.toString().replaceAll('UserType.', '')
     };
     final http.Response response = await http.post(
       api + "gyroscope",
@@ -631,7 +659,8 @@ mixin ReportModel on ConnectedSafeRideModel {
       'x': x,
       'y': y,
       'z': z,
-      'user_id': userId,
+      'uid': _currentUser.uid,
+      'user_type': _userType.toString().replaceAll('UserType.', '')
     };
     final http.Response response = await http.post(
       api + "location",
@@ -677,7 +706,4 @@ mixin ReportModel on ConnectedSafeRideModel {
       print(DataConnectionChecker().lastTryResults);
     }
   }
-
-
-
 }

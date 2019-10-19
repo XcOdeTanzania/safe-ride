@@ -51,6 +51,8 @@ class _HomePageState extends State<HomePage> {
 
   var isDeviceConnected = false;
 
+  var location = new Location();
+
   ScreenshotController screenshotController = ScreenshotController();
 
   final FocusNode _plateNoFocusNode = FocusNode();
@@ -58,6 +60,12 @@ class _HomePageState extends State<HomePage> {
   TextEditingController _platNoTextEditingController = TextEditingController();
 
   AudioPlayer audioPlayer = AudioPlayer();
+
+  //Accelerations...
+
+  double ax = 0.0;
+  double ay = 0.0;
+  double az = 0.0;
 
   @override
   void initState() {
@@ -228,11 +236,11 @@ class _HomePageState extends State<HomePage> {
 
       widget.model.addNewGPSLog(log: _log);
 
-      widget.model.postLocation(
-          x: currentLocation.latitude,
-          y: currentLocation.longitude,
-          z: currentLocation.speed * 3.6,
-          userId: 1);
+      // widget.model.postLocation(
+      //     x: currentLocation.latitude,
+      //     y: currentLocation.longitude,
+      //     z: currentLocation.speed * 3.6,
+      //     userId: 1);
 
       setState(() {
         marker = Marker(
@@ -286,8 +294,6 @@ class _HomePageState extends State<HomePage> {
           AccelerometerLogs(x: event.x, y: event.y, z: event.z);
 
       widget.model.addNewAccelerometerLog(log: _log);
-      widget.model
-          .postAcceletion(x: event.x, y: event.y, z: event.z, userId: 1);
     });
 
 //gyroscope
@@ -295,11 +301,12 @@ class _HomePageState extends State<HomePage> {
       GyroscopeLogs _log = GyroscopeLogs(x: event.x, y: event.y, z: event.z);
 
       widget.model.addNewGyroscopeLog(log: _log);
-      widget.model.postGyroscope(x: event.x, y: event.y, z: event.z, userId: 1);
+
+      // widget.model.postGyroscope(x: event.x, y: event.y, z: event.z, userId: 1);
     });
   }
 
-  void showInSnackBar(String value) {
+  void _showInSnackBar(String value, Color color) {
     FocusScope.of(context).requestFocus(new FocusNode());
     _scaffoldKey.currentState?.removeCurrentSnackBar();
     _scaffoldKey.currentState.showSnackBar(new SnackBar(
@@ -311,7 +318,7 @@ class _HomePageState extends State<HomePage> {
             fontSize: 16.0,
             fontFamily: "WorkSansSemiBold"),
       ),
-      backgroundColor: ThemeColor.Colors.saferidePrimaryColor,
+      backgroundColor: color,
       duration: Duration(seconds: 3),
     ));
   }
@@ -413,16 +420,24 @@ class _HomePageState extends State<HomePage> {
               child: Text('Set User Type',
                   style: TextStyle(
                       fontFamily: 'itikaf',
+                      
                       color: Colors.white,
                       fontWeight: FontWeight.bold))),
           content: SingleChildScrollView(
               child: Column(
             children: <Widget>[
-              Text('Are you a Driver or Passanger ?',
-                  style: TextStyle(
-                      fontFamily: 'itikaf',
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold)),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text('Are you a Driver or Passanger ?',
+                    textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontFamily: 'itikaf',
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold)),
+                  ),
+                ],
+              ),
               SizedBox(
                 height: 10,
               ),
@@ -436,6 +451,7 @@ class _HomePageState extends State<HomePage> {
                         child: Text('DRIVER',
                             style: TextStyle(
                                 color: Colors.white,
+                                fontSize: 10,
                                 fontWeight: FontWeight.bold)),
                         onPressed: () {
                           Navigator.of(context).pop();
@@ -450,8 +466,10 @@ class _HomePageState extends State<HomePage> {
                       child: FlatButton(
                         color: Colors.blue,
                         child: Text('PASSANGER',
+                            maxLines: 1,
                             style: TextStyle(
                                 color: Colors.white,
+                                fontSize: 10,
                                 fontWeight: FontWeight.bold)),
                         onPressed: () {
                           Navigator.of(context).pop();
@@ -557,14 +575,25 @@ class _HomePageState extends State<HomePage> {
                                   fontWeight: FontWeight.bold)),
                           onPressed: () {
                             if (_formKeys.currentState.validate()) {
-                              model.postReport(
-                                  platNo: _platNoTextEditingController.text,
-                                  file: model.imageFile,
-                                  message: 'Over speeding',
-                                  reportId: 2,
-                                  stationId: 9,
-                                  uid: model.currentUser.uid);
-                              Navigator.of(context).pop();
+                              model
+                                  .postReport(
+                                      platNo: _platNoTextEditingController.text,
+                                      file: model.imageFile,
+                                      message: 'Over speeding',
+                                      reportId: 2,
+                                      stationId: 9,
+                                      uid: model.currentUser.uid)
+                                  .then((onValue) {
+                                if (!onValue) {
+                                  _platNoTextEditingController.clear();
+                                  _showInSnackBar(
+                                      'Report sent successfully', Colors.green);
+                                  Navigator.of(context).pop();
+                                } else {
+                                  _showInSnackBar(
+                                      'No internet connect', Colors.red);
+                                }
+                              });
                             }
                           },
                         ),
@@ -585,7 +614,7 @@ class _HomePageState extends State<HomePage> {
         await audioPlayer.play('assets/audios/beep.mp3', isLocal: true);
     if (result == 1) {
       // success
-      print('start');
+
     }
   }
 
@@ -593,7 +622,7 @@ class _HomePageState extends State<HomePage> {
     int result = await audioPlayer.stop();
     if (result == 1) {
       // success
-      print('stopped');
+
     }
   }
 }

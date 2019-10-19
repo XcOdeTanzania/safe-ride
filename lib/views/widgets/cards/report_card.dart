@@ -6,12 +6,14 @@ typedef ReportCardTap = Function();
 
 class ReportCard extends StatelessWidget {
   final Report report;
+  final String title;
 
   final ReportCardTap onTap;
   const ReportCard({
     Key key,
     @required this.report,
     @required this.onTap,
+    @required this.title,
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -24,7 +26,6 @@ class ReportCard extends StatelessWidget {
               fit: BoxFit.cover)),
     );
 
-   
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -51,7 +52,7 @@ class ReportCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text('PLATE NO: ' + report.platNo,
+                    Text(title + ':' + report.platNo,
                         style: TextStyle(
                           color: Colors.black26,
                           fontWeight: FontWeight.bold,

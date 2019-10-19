@@ -54,7 +54,7 @@ class PiecChart extends StatelessWidget {
         //          insideLabelStyleSpec: new charts.TextStyleSpec(...),
         //          outsideLabelStyleSpec: new charts.TextStyleSpec(...)),
         defaultRenderer: new charts.ArcRendererConfig(
-            arcWidth: 60,
+            arcWidth: 100,
             arcRendererDecorators: [new charts.ArcLabelDecorator()]));
     var chartWidget = Flexible(
       child: chart,
@@ -74,10 +74,10 @@ class PiecChart extends StatelessWidget {
   /// Create one series with sample hard coded data.
   static List<charts.Series<LinearSales, int>> _createSampleData() {
     final data = [
-      new LinearSales(0, 60),
+      new LinearSales(0, 90),
       new LinearSales(1, 80),
       new LinearSales(2, 120),
-      new LinearSales(3, 200),
+      new LinearSales(3, 50),
     ];
 
     return [
@@ -87,7 +87,7 @@ class PiecChart extends StatelessWidget {
         measureFn: (LinearSales sales, _) => sales.sales,
         data: data,
         // Set a label accessor to control the text of the arc label.
-        labelAccessorFn: (LinearSales row, _) => '${row.year}: ${row.sales}',
+        labelAccessorFn: (LinearSales row, _) => '${row.sales}'+'\tKMP',
       )
     ];
   }
