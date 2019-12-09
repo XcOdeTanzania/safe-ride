@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:location/location.dart';
 import 'package:safe_ride/data/main.dart';
 import 'package:safe_ride/views/pages/camera/camera_page.dart';
 import 'package:safe_ride/views/widgets/alerts/custom_circular_progress_bar.dart';
@@ -21,6 +22,19 @@ class _CreateReportPageState extends State<CreateReportPage> {
 
   final TextEditingController _commentTextEditingController =
       TextEditingController();
+  var location = new Location();
+  double _latitude = 0.0;
+  double _longitude = 0.0;
+  @override
+  void initState() {
+    location.getLocation().then((onValue) {
+      setState(() {
+        _latitude = onValue.latitude;
+        _longitude = onValue.longitude;
+      });
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +187,9 @@ class _CreateReportPageState extends State<CreateReportPage> {
                                 stationId: 8,
                                 file: model.imageFile,
                                 reportId: 1,
-                                uid: model.currentUser.uid)
+                                uid: model.currentUser.uid,
+                                latitude: _latitude,
+                                longitude: _longitude)
                             .then((onValue) {
                           if (!onValue) {
                             model.setScreenShot(status: false);

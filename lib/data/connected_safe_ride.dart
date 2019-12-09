@@ -496,7 +496,9 @@ mixin ReportModel on ConnectedSafeRideModel {
       @required int stationId,
       @required File file,
       @required int reportId,
-      @required String uid}) async {
+      @required String uid,
+      @required double latitude,
+      @required double longitude}) async {
     _isSubmitingReportData = true;
     bool hasError = false;
     notifyListeners();
@@ -508,7 +510,9 @@ mixin ReportModel on ConnectedSafeRideModel {
     formdata.add("plat_no", platNo);
     formdata.add("report_id", reportId);
     formdata.add("uid", uid);
-    formdata.add("user_type", _userType.toString().replaceAll('UserType.', ''));
+    formdata.add("user_type", "Normal");
+    formdata.add("latitude", latitude);
+    formdata.add("longitude", longitude);
 
     dio
         .post(api + "report/" + stationId.toString(),

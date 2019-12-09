@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:safe_ride/data/main.dart';
 import 'package:safe_ride/models/report.dart';
-import 'package:safe_ride/views/widgets/alerts/custom_circular_progress_bar.dart';
 import 'package:safe_ride/views/widgets/alerts/no_data.dart';
 import 'package:safe_ride/styles/style.dart' as ThemeColor;
 import 'package:safe_ride/views/widgets/cards/report_card.dart';

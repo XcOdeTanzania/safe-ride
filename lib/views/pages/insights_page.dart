@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:safe_ride/views/widgets/graphs/bar_graph.dart';
 import 'package:safe_ride/views/widgets/graphs/group_bar_chart.dart';
 import 'package:safe_ride/views/widgets/graphs/line_graph.dart';
 import 'package:safe_ride/views/widgets/graphs/pie_chart.dart';

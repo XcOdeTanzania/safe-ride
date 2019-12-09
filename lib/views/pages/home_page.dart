@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:safe_ride/models/accelerometer.dart';
 import 'package:safe_ride/models/gps_logs.dart';
 import 'package:safe_ride/models/gyroscope_logs.dart';
-import 'package:safe_ride/utils/enums.dart';
+
 import 'package:safe_ride/views/pages/reports/report_page.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:screenshot/screenshot.dart';
@@ -66,10 +66,17 @@ class _HomePageState extends State<HomePage> {
   double ax = 0.0;
   double ay = 0.0;
   double az = 0.0;
-
+  double _latitude = 0.0;
+  double _longitude = 0.0;
   @override
   void initState() {
     widget.model.fetchStations();
+    location.getLocation().then((onValue) {
+      setState(() {
+        _latitude = onValue.latitude;
+        _longitude = onValue.longitude;
+      });
+    });
     super.initState();
 
     BitmapDescriptor.fromAssetImage(
@@ -79,10 +86,6 @@ class _HomePageState extends State<HomePage> {
     });
 
     _getLocation();
-
-    if (widget.model.userType == null) {
-      startTime();
-    }
   }
 
   @override
@@ -101,7 +104,7 @@ class _HomePageState extends State<HomePage> {
         return Scaffold(
           key: _scaffoldKey,
           appBar: AppBar(
-            title: Text('Safe Ride'),
+            title: Text('Safe Roads'),
           ),
           body: Stack(
             children: <Widget>[
@@ -404,89 +407,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  startTime() async {
-    var _duration = new Duration(seconds: 6);
-    return new Timer(_duration, _showConfirmDialog);
-  }
-
-  void _showConfirmDialog() {
-    showDialog<void>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Color(0xFFf43f5f),
-          title: Center(
-              child: Text('Set User Type',
-                  style: TextStyle(
-                      fontFamily: 'itikaf',
-                      
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold))),
-          content: SingleChildScrollView(
-              child: Column(
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Text('Are you a Driver or Passanger ?',
-                    textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontFamily: 'itikaf',
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold)),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.all(10),
-                      child: FlatButton(
-                        color: Colors.blue,
-                        child: Text('DRIVER',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold)),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          widget.model.setUserType(type: UserType.driver);
-                        },
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Container(
-                      padding: EdgeInsets.all(10),
-                      child: FlatButton(
-                        color: Colors.blue,
-                        child: Text('PASSANGER',
-                            maxLines: 1,
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold)),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          widget.model.setUserType(type: UserType.passanger);
-                        },
-                      ),
-                    ),
-                  )
-                ],
-              )
-            ],
-          )),
-        );
-      },
-    );
-  }
-
   void _reportSpeed(MainModel model) {
     showDialog<void>(
       context: context,
@@ -529,8 +449,8 @@ class _HomePageState extends State<HomePage> {
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5),
                             borderSide: BorderSide(color: Colors.pinkAccent)),
-                        hintText: "PlatNo",
-                        labelText: "PlatNo",
+                        hintText: "PlateNo",
+                        labelText: "PlateNo",
                         labelStyle: TextStyle(color: Colors.pinkAccent),
                         hintStyle: TextStyle(
                             fontFamily: "WorkSansSemiBold",
@@ -582,7 +502,9 @@ class _HomePageState extends State<HomePage> {
                                       message: 'Over speeding',
                                       reportId: 2,
                                       stationId: 9,
-                                      uid: model.currentUser.uid)
+                                      uid: model.currentUser.uid,
+                                      latitude: _latitude,
+                                      longitude: _longitude)
                                   .then((onValue) {
                                 if (!onValue) {
                                   _platNoTextEditingController.clear();

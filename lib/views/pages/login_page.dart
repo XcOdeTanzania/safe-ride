@@ -82,7 +82,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     Padding(
                       padding: EdgeInsets.only(top: 1.0),
-                      child: Text('SAFE RIDE',
+                      child: Text('Safe Roads',
                           style: TextStyle(
                               fontFamily: 'trajanProRegular',
                               fontSize: 17.0,
